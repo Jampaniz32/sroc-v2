@@ -1,0 +1,5 @@
+{
+  "name": "SROC - Sistema de Registo Operacional de Chamadas",
+  "description": "Uma plataforma profissional para registo e gestão de chamadas operacionais, com perfis de Agente e Administrador, exportação de dados e relatórios detalhados.",
+  "requestFramePermissions": []
+}

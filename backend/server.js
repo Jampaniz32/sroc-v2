@@ -1,0 +1,199 @@
+import express from 'express';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { v4 as uuidv4 } from 'uuid';
+import db from './config/database.js';
+
+// Routes
+import authRoutes from './routes/auth.js';
+import callsRoutes from './routes/calls.js';
+import usersRoutes from './routes/users.js';
+import messagesRoutes from './routes/messages.js';
+import exportRoutes from './routes/export.js';
+import configRoutes from './routes/config.js';
+import clientsRoutes from './routes/clients.js';
+import backupRoutes from './routes/backup.js';
+import observationTemplatesRoutes from './routes/observationTemplates.js';
+
+dotenv.config();
+
+const app = express();
+const httpServer = createServer(app);
+
+// CORS configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+
+const io = new Server(httpServer, {
+    cors: {
+        origin: allowedOrigins,
+        methods: ['GET', 'POST'],
+        credentials: true
+    }
+});
+
+// Middleware
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true,
+    exposedHeaders: ['Content-Disposition']
+}));
+app.use(express.json({ limit: '50mb' })); // Aumentar limite para imagens base64
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/calls', callsRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/messages', messagesRoutes);
+app.use('/api/export', exportRoutes);
+app.use('/api/config', configRoutes);
+app.use('/api/clients', clientsRoutes);
+app.use('/api/backup', backupRoutes);
+app.use('/api/observation-templates', observationTemplatesRoutes);
+
+// Health check
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Socket.io - Real-time Chat
+const activeUsers = new Map(); // userId -> socketId
+
+io.on('connection', (socket) => {
+    console.log(`✅ User connected: ${socket.id}`);
+
+    // User joins with authentication
+    socket.on('join', async (userData) => {
+        try {
+            const { userId, name, roomId } = userData;
+
+            socket.userId = userId;
+            socket.userName = name;
+
+            // Cada usuário entra em sua própria sala (para DMs e notificações)
+            socket.join(`user_${userId}`);
+
+            // E na sala global por padrão
+            socket.currentRoom = roomId || 'global';
+            socket.join(socket.currentRoom);
+
+            activeUsers.set(userId, socket.id);
+
+            // Enviar lista de usuários ativos
+            io.emit('activeUsers', Array.from(activeUsers.keys()));
+
+            console.log(`👤 ${name} (${userId}) entrou no SROC. Sala atual: ${socket.currentRoom}`);
+        } catch (error) {
+            console.error('Join error:', error);
+        }
+    });
+
+    // Send message
+    socket.on('sendMessage', async (messageData) => {
+        try {
+            const { senderId, senderName, content, roomId } = messageData;
+
+            const messageId = uuidv4();
+            const timestamp = new Date();
+
+            // Save to database
+            await db.query(
+                'INSERT INTO messages (id, sender_id, sender_name, content, room_id, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
+                [messageId, senderId, senderName, content, roomId, timestamp]
+            );
+
+            const message = {
+                id: messageId,
+                senderId,
+                senderName,
+                content,
+                roomId,
+                timestamp: timestamp.toISOString()
+            };
+
+            // Se for sala global, envia pra todos
+            if (roomId === 'global') {
+                io.emit('newMessage', message);
+            } else if (roomId === 'ai') {
+                // Se for AI, apenas o próprio usuário recebe (o backend/frontend lida com a resposta)
+                socket.emit('newMessage', message);
+            } else {
+                // Se for DM (id1_id2), envia para as salas individuais dos dois envolvidos
+                const participants = roomId.split('_');
+                participants.forEach(pId => {
+                    io.to(`user_${pId}`).emit('newMessage', message);
+                });
+            }
+
+            console.log(`💬 Mensagem de ${senderName} em ${roomId}: ${content.substring(0, 50)}...`);
+        } catch (error) {
+            console.error('Send message error:', error);
+            socket.emit('error', { message: 'Erro ao enviar mensagem' });
+        }
+    });
+
+    // Switch room
+    socket.on('switchRoom', (newRoomId) => {
+        if (socket.currentRoom && socket.currentRoom !== 'global') {
+            socket.leave(socket.currentRoom);
+        }
+        socket.currentRoom = newRoomId;
+        socket.join(newRoomId);
+        console.log(`🔄 ${socket.userName} mudou para a sala: ${newRoomId}`);
+    });
+
+    // Typing indicator
+    socket.on('typing', (data) => {
+        const { roomId } = data;
+        if (roomId === 'global') {
+            socket.broadcast.emit('userTyping', { userId: socket.userId, userName: socket.userName, roomId });
+        } else {
+            const participants = roomId.split('_');
+            const targetId = participants.find(id => id !== socket.userId);
+            if (targetId) {
+                io.to(`user_${targetId}`).emit('userTyping', { userId: socket.userId, userName: socket.userName, roomId });
+            }
+        }
+    });
+
+    socket.on('stopTyping', (data) => {
+        const { roomId } = data;
+        if (roomId === 'global') {
+            socket.broadcast.emit('userStoppedTyping', { userId: socket.userId, roomId });
+        } else {
+            const participants = roomId.split('_');
+            const targetId = participants.find(id => id !== socket.userId);
+            if (targetId) {
+                io.to(`user_${targetId}`).emit('userStoppedTyping', { userId: socket.userId, roomId });
+            }
+        }
+    });
+
+    // Disconnect
+    socket.on('disconnect', () => {
+        if (socket.userId) {
+            activeUsers.delete(socket.userId);
+            io.emit('activeUsers', Array.from(activeUsers.keys()));
+            console.log(`❌ ${socket.userName} desconectou`);
+        }
+    });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+});
+
+// Start server
+const PORT = process.env.PORT || 3001;
+httpServer.listen(PORT, () => {
+    console.log(`\n🚀 SROC Backend Server`);
+    console.log(`📡 HTTP API: http://localhost:${PORT}`);
+    console.log(`🔌 WebSocket: ws://localhost:${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+});
+
+export { io };

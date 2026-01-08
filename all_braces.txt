@@ -1,0 +1,153 @@
+1: import React, { useState, useEffect, useRef, useMemo } from 'react';
+2: import { User, UserRole, CallRecord, Shift, SystemConfig, Toast, ChatMessage } from './types';
+3: import { getCurrentShift, requestNotificationPermission, sendPushNotification } from './utils';
+4: import { callsAPI, usersAPI, authAPI, messagesAPI } from './services/api';
+5: import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, sendMessage as sendSocketMessage } from './services/socket';
+16: const TAB_NAMES: Record<string, string> = {
+22: };
+24: const App: React.FC = () => {
+28:   useEffect(() => {
+29:     const checkSession = async () => {
+33:       if (!token || !savedUser) {
+36:       }
+38:       try {
+41:       } catch (error) {
+45:       } finally {
+47:       }
+48:     };
+51:   }, []);
+53:   const [activeTab, setActiveTab] = useState<string>(() => {
+55:   });
+63:   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
+70:   const [systemConfig, setSystemConfig] = useState<SystemConfig>(() => {
+72:     try {
+74:       if (saved) {
+76:         if (!parsed.exportSettings?.selectedFields) {
+77:           parsed.exportSettings = { ...parsed.exportSettings, selectedFields: defaultFields };
+78:         }
+80:       }
+81:     } catch (e) { console.error('Erro config', e); }
+83:     return {
+86:       fieldVisibility: { clientName: true, phoneNumber: true, reason: true, observations: true },
+88:       exportSettings: { defaultFormat: 'XLS', allowMultipleFormats: true, reportLogo: '', selectedFields: defaultFields },
+89:       backupSettings: { autoBackupEnabled: false, frequency: 'daily', retentionMonths: 12, autoDeleteExpired: false }
+90:     };
+91:   });
+93:   const totalUnread = useMemo(() => {
+95:   }, [unreadCounts]);
+97:   useEffect(() => {
+99:   }, [systemConfig]);
+101:   useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+102:   useEffect(() => { activeRoomRef.current = activeChatRoomId; }, [activeChatRoomId]);
+104:   useEffect(() => {
+107:   }, []);
+109:   useEffect(() => { requestNotificationPermission(); }, []);
+111:   useEffect(() => {
+113:     if (totalUnread > 0) {
+114:       document.title = `(${totalUnread}) Novo Alerta - ${baseTitle}`;
+115:     } else {
+116:       document.title = `SROC - ${baseTitle}`;
+117:     }
+118:   }, [totalUnread, activeTab]);
+120:   useEffect(() => {
+127:     if (currentUser.role === UserRole.ADMIN) {
+131:     } else {
+135:     }
+143:     const handleNewMessage = (msg: ChatMessage) => {
+146:       if (!isViewing) {
+147:         setUnreadCounts(prev => ({ ...prev, [msg.roomId]: (prev[msg.roomId] || 0) + 1 }));
+148:         showToast(`Nova mensagem de ${msg.senderName}`, 'info');
+149:       }
+150:     };
+154:     return () => {
+157:     };
+158:   }, [currentUser]);
+160:   const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+162:     setToasts(prev => [...prev, { id, message, type }]);
+164:   };
+166:   const handleLogin = (user: User) => {
+169:     if (!user.requiresPasswordChange) {
+171:     }
+172:   };
+174:   const handlePasswordChanged = (updatedUser: User) => {
+179:   };
+181:   const handleLogout = () => {
+186:   };
+188:   const loadCallsServer = () => {
+192:   };
+194:   const addCall = (data: any) => {
+195:     callsAPI.create({ ...data, turno: getCurrentShift() })
+196:       .then(() => {
+199:       })
+200:       .catch((err) => {
+203:       });
+204:   };
+206:   const updateCall = (data: CallRecord) => {
+208:       .then(updated => { setCalls(p => p.map(c => c.id === updated.id ? updated : c)); showToast('Atualizado!'); })
+210:   };
+212:   const deleteCall = (id: string) => {
+214:       .then(() => { setCalls(p => p.filter(c => c.id !== id)); showToast('Removido!'); })
+216:   };
+218:   const addUser = (userData: Omit<User, 'id'>) => {
+219:     usersAPI.create(userData).then(newUser => {
+222:     }).catch(err => showToast('Erro ao criar utilziador', 'error'));
+223:   };
+225:   const updateUser = (userData: User) => {
+226:     usersAPI.update(userData.id, userData).then(updated => {
+229:     }).catch(err => showToast('Erro ao atualizar', 'error'));
+230:   };
+232:   const deleteUser = (id: string) => {
+233:     usersAPI.delete(id).then(() => {
+236:     }).catch(err => showToast('Erro ao remover', 'error'));
+237:   };
+239:   if (isLoading) {
+245:   }
+247:   if (!currentUser) {
+248:     return <Login onLogin={handleLogin} config={systemConfig} />;
+249:   }
+254:         {toasts.map(t => (
+255:           <div key={t.id} className={`pointer-events-auto px-6 py-4 rounded-xl shadow-lg border bg-white ${t.type === 'error' ? 'text-red-600 border-red-100' : 'text-emerald-600 border-emerald-100'}`}>
+256:             <span className="font-bold text-xs uppercase">{t.message}</span>
+258:         ))}
+262:         user={currentUser}
+263:         activeTab={activeTab as any}
+264:         setActiveTab={setActiveTab}
+265:         onLogout={handleLogout}
+266:         config={systemConfig}
+267:         isOpen={isSidebarOpen}
+268:         onClose={() => setIsSidebarOpen(false)}
+269:         totalUnread={totalUnread}
+270:         onOpenProfile={() => setIsProfileModalOpen(true)}
+273:       <main className={`flex-1 p-6 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
+277:               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+281:                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+286:               <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none">{TAB_NAMES[activeTab] || activeTab}</h1>
+292:             onClick={() => setIsProfileModalOpen(true)}
+295:               <p className="text-xs font-black text-slate-800 tracking-tight leading-none mb-1.5">{currentUser.name}</p>
+298:                   {currentShift}
+304:               {currentUser.name.charAt(0).toUpperCase()}
+310:           {activeTab === 'dashboard' && <Dashboard calls={calls} user={currentUser} setActiveTab={setActiveTab} />}
+311:           {activeTab === 'new-call' && <CallForm onAdd={addCall} user={currentUser} />}
+312:           {activeTab === 'chat' &&
+314:               currentUser={currentUser} users={users} messages={messages}
+315:               activeRoomId={activeChatRoomId} setActiveRoomId={setActiveChatRoomId}
+316:               onSendMessage={(content, roomId, senderOverride) => {
+320:               }}
+321:               unreadCounts={unreadCounts} onReadRoom={(id) => setUnreadCounts(p => ({ ...p, [id]: 0 }))}
+323:           }
+324:           {activeTab === 'calls' && <CallList calls={calls} user={currentUser} users={users} systemConfig={systemConfig} onDeleteCall={deleteCall} onUpdateCall={updateCall} />}
+325:           {activeTab === 'settings' && currentUser.role === UserRole.ADMIN && (
+327:               config={systemConfig}
+328:               onUpdate={setSystemConfig}
+329:               users={users}
+330:               onAddUser={addUser}
+331:               onUpdateUser={updateUser}
+332:               onDeleteUser={deleteUser}
+333:               calls={calls}
+335:           )}
+339:       {isProfileModalOpen && <ProfileModal user={currentUser} onClose={() => setIsProfileModalOpen(false)} onUpdate={setCurrentUser} />}
+341:       {currentUser.requiresPasswordChange && (
+343:           user={currentUser}
+344:           onPasswordChanged={handlePasswordChanged}
+346:       )}
+349: };

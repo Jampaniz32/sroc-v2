@@ -10,7 +10,6 @@ export const CALL_TYPES = [
   'Descontos Apos Maturidade do Credito',
   'Descontos Apos Top-Up',
   'Descontos incorrectos',
-  'Descontos Indevidos / Restrutura',
   'Duplo Desconto',
   'Pedidos de Cotação',
   'Plano de Amortização',

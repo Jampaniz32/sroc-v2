@@ -5,8 +5,6 @@ import { CallStage, CallType, Entity } from './types';
 // Manter arrays independentes dos Enums para evitar Temporal Dead Zone (TDZ) no build de produção
 export const CALL_STAGES = ['Aberto', 'Em Tratamento', 'Resolvido', 'Pendente', 'Encaminhado'];
 export const CALL_TYPES = [
-  'Deposito a Prazo',
-  'Deposito a Prazo - ERRO',
   'Desconto Sem Ter Beneficiado do credito',
   'Descontos Apos Liquidacao do Credito',
   'Descontos Apos Maturidade do Credito',
@@ -16,12 +14,12 @@ export const CALL_TYPES = [
   'Duplo Desconto',
   'Pedidos de Cotação',
   'Plano de Amortização',
-  'Processo de Abertura de Contas',
-  'Remediação de Contas',
   'Restruturação de Crédito',
   'Plano de pagamento',
   'Financiamento',
   'Maturidade do Crédito',
+  'Carta de Quitação',
+  'Exposição Escrita',
   'Outro'
 ];
 export const ENTITIES = ['CEDSIF', 'DEFESA', 'CASA MILITAR', 'MINISTERIO DO INTERIOR'];

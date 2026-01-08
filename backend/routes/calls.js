@@ -32,11 +32,8 @@ router.use(authenticateToken);
 router.get('/', async (req, res) => {
     try {
         const [calls] = await db.query(
-            'SELECT * FROM calls ORDER BY data DESC'
+            'SELECT * FROM calls ORDER BY created_at DESC'
         );
-        if (calls.length > 0) {
-            console.log('DEBUG DB RAW OBJECT:', calls[0]); // VERIFICAR CHAVES
-        }
         res.json(calls.map(convertCallToFrontend));
     } catch (error) {
         console.error('Get calls error:', error);

@@ -182,9 +182,16 @@ io.on('connection', (socket) => {
                         timestamp: aiTs.toISOString()
                     });
                 }, 1500);
-            } else {
+            } else if (roomId.includes('_')) {
                 // DM: Envia para os dois envolvidos
                 const participants = roomId.split('_');
+
+                // Segurança: verifica se quem envia faz parte da sala
+                if (!participants.includes(String(senderId))) {
+                    console.warn(`🛑 Tentativa de intrusão: ${senderName} tentou enviar para sala privada ${roomId}`);
+                    return socket.emit('error', { message: 'Não tens permissão para enviar mensagens nesta sala.' });
+                }
+
                 console.log(`📩 DM ${roomId}: Enviar para ${participants.join(' e ')}`);
 
                 participants.forEach(pId => {

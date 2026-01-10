@@ -115,12 +115,18 @@ const Chat: React.FC<ChatProps> = ({
 
       safeMessages.forEach(msg => {
         if (msg.roomId && typeof msg.roomId === 'string' && msg.roomId.includes('_')) {
-          roomIdsFromMessages.add(msg.roomId);
+          const participants = msg.roomId.split('_');
+          if (participants.includes(String(currentUser.id))) {
+            roomIdsFromMessages.add(msg.roomId);
+          }
         }
       });
 
       if (activeRoomId && activeRoomId.includes('_')) {
-        roomIdsFromMessages.add(activeRoomId);
+        const participants = activeRoomId.split('_');
+        if (participants.includes(String(currentUser.id))) {
+          roomIdsFromMessages.add(activeRoomId);
+        }
       }
 
       roomIdsFromMessages.forEach(roomId => {

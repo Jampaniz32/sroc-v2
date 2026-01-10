@@ -142,6 +142,9 @@ const App: React.FC = () => {
       console.log('📨 New message received via socket:', msg);
       setMessages(prev => [...prev, msg]);
 
+      // Não notificar o próprio utilizador
+      if (String(msg.senderId) === String(currentUser.id)) return;
+
       const isViewing = activeTabRef.current === 'chat' && activeRoomRef.current === msg.roomId;
       const isDocumentHidden = document.hidden;
 

@@ -127,30 +127,57 @@ io.on('connection', (socket) => {
                 [messageId, senderId, senderName, content, roomId, timestamp]
             );
 
-            const message = {
-                id: messageId,
-                senderId,
-                senderName,
-                content,
-                roomId,
-                timestamp: timestamp.toISOString()
-            };
+            // Fetch the message back from DB to ensure format consistency
+            const [rows] = await db.query(
+                'SELECT id, sender_id as senderId, sender_name as senderName, content, room_id as roomId, timestamp FROM messages WHERE id = ?',
+                [messageId]
+            );
 
-            // Se for sala global, envia pra todos
+            if (rows.length === 0) throw new Error('Failed to retrieve message after save');
+
+            const message = rows[0];
+            message.timestamp = new Date(message.timestamp).toISOString();
+
+            // Emit logic
             if (roomId === 'global') {
                 io.emit('newMessage', message);
             } else if (roomId === 'ai') {
-                // Se for AI, apenas o próprio usuário recebe (o backend/frontend lida com a resposta)
+                // Para a IA, primeiro emite a mensagem do usuário
                 socket.emit('newMessage', message);
+
+                // Emite um "typing" fictício da IA
+                socket.emit('userTyping', { userId: 'ai', userName: 'SROC AI Assistant', roomId: 'ai' });
+
+                // Resposta da IA com atraso
+                setTimeout(async () => {
+                    const aiContent = "Olá! O assistente SROC AI está em manutenção para melhorias. Por favor, utilize o chat geral para comunicações com a equipa.";
+                    const aiMsgId = uuidv4();
+                    const aiTs = new Date();
+
+                    await db.query(
+                        'INSERT INTO messages (id, sender_id, sender_name, content, room_id, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
+                        [aiMsgId, 'ai', 'SROC AI Assistant', aiContent, 'ai', aiTs]
+                    );
+
+                    socket.emit('userStoppedTyping', { userId: 'ai', roomId: 'ai' });
+                    socket.emit('newMessage', {
+                        id: aiMsgId,
+                        senderId: 'ai',
+                        senderName: 'SROC AI Assistant',
+                        content: aiContent,
+                        roomId: 'ai',
+                        timestamp: aiTs.toISOString()
+                    });
+                }, 1500);
             } else {
-                // Se for DM (id1_id2), envia para as salas individuais dos dois envolvidos
+                // DM: Envia para os dois envolvidos
                 const participants = roomId.split('_');
                 participants.forEach(pId => {
                     io.to(`user_${pId}`).emit('newMessage', message);
                 });
             }
 
-            console.log(`💬 Mensagem de ${senderName} em ${roomId}: ${content.substring(0, 50)}...`);
+            console.log(`💬 ${senderName} em ${roomId}: ${content.substring(0, 50)}...`);
         } catch (error) {
             console.error('Send message error:', error);
             socket.emit('error', { message: 'Erro ao enviar mensagem' });

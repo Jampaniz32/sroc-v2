@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, ChatMessage } from '../types';
+import { startTyping, stopTyping, onUserTyping, onUserStoppedTyping } from '../services/socket';
 
 interface ChatProps {
   currentUser: User;
@@ -25,6 +26,7 @@ const Chat: React.FC<ChatProps> = ({
   const [inputValue, setInputValue] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [showUserPicker, setShowUserPicker] = useState(false);
+  const [typingUsers, setTypingUsers] = useState<Record<string, string[]>>({});
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const safeMessages = useMemo(() => Array.isArray(messages) ? messages : [], [messages]);
@@ -38,6 +40,39 @@ const Chat: React.FC<ChatProps> = ({
     scrollToBottom();
     try { if (activeRoomId) onReadRoom(activeRoomId); } catch (e) { console.error(e); }
   }, [activeRoomId]);
+
+  useEffect(() => {
+    const handleTyping = (data: { userId: string, userName: string, roomId: string }) => {
+      setTypingUsers(prev => {
+        const roomTyping = prev[data.roomId] || [];
+        if (!roomTyping.includes(data.userName)) {
+          return { ...prev, [data.roomId]: [...roomTyping, data.userName] };
+        }
+        return prev;
+      });
+    };
+
+    const handleStopTyping = (data: { userId: string, roomId: string }) => {
+      setTypingUsers(prev => {
+        const roomTyping = prev[data.roomId] || [];
+        // Precisamos do nome, mas o socket envia apenas o ID no stopTyping para poupar banda.
+        // No Chat, como as mensagens têm o nome, podemos filtrar de forma mais simples ou apagar tudo se for apenas 1 vs 1.
+        if (data.roomId !== 'global') {
+          return { ...prev, [data.roomId]: [] };
+        }
+        // Para a sala global, limpamos após um tempo ou se tivermos mapeamento ID->Nome. 
+        // Por agora, para simplicidade:
+        return { ...prev, [data.roomId]: [] };
+      });
+    };
+
+    onUserTyping(handleTyping);
+    onUserStoppedTyping(handleStopTyping);
+
+    return () => {
+      // Idealmente offUserTyping, mas as subscrições globais no socket.ts gerem isto.
+    };
+  }, []);
 
   useEffect(() => {
     try {
@@ -115,6 +150,17 @@ const Chat: React.FC<ChatProps> = ({
     onReadRoom(roomId);
   };
 
+  // Typing indicator effect
+  useEffect(() => {
+    if (inputValue.trim()) {
+      startTyping(activeRoomId);
+      const timeout = setTimeout(() => stopTyping(activeRoomId), 2000);
+      return () => clearTimeout(timeout);
+    } else {
+      stopTyping(activeRoomId);
+    }
+  }, [inputValue, activeRoomId]);
+
   const handleSend = async () => {
     if (!inputValue.trim()) return;
     const currentMsg = inputValue;
@@ -122,13 +168,7 @@ const Chat: React.FC<ChatProps> = ({
     setInputValue('');
     onSendMessage(currentMsg, currentRoomId);
 
-    if (currentRoomId === 'ai') {
-      setIsAiLoading(true);
-      setTimeout(() => {
-        onSendMessage("O assistente SROC AI está em manutenção. Por enquanto, posso ajudá-lo com as funções básicas do sistema através do chat geral.", 'ai', { id: 'ai', name: 'SROC AI Assistant' });
-        setIsAiLoading(false);
-      }, 1000);
-    }
+    // O backend agora lida com a resposta da IA
   };
 
   return (
@@ -241,14 +281,22 @@ const Chat: React.FC<ChatProps> = ({
               <p className="text-xs font-black uppercase tracking-[0.2em]">Início da conversa em {activeRoom?.name}</p>
             </div>
           )}
-          {isAiLoading && (
-            <div className="flex space-x-2 items-center p-2">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-100"></div>
-              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-200"></div>
-            </div>
-          )}
         </div>
+
+        {(typingUsers[activeRoomId] || []).length > 0 && (
+          <div className="px-8 pb-4">
+            <div className="flex items-center space-x-2 p-2 px-4 bg-slate-50 rounded-full w-fit animate-pulse">
+              <div className="flex space-x-1">
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce"></div>
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce delay-75"></div>
+                <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce delay-150"></div>
+              </div>
+              <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest italic">
+                {typingUsers[activeRoomId].join(', ')} está a escrever...
+              </span>
+            </div>
+          </div>
+        )}
 
         <footer className="p-6 bg-white border-t border-slate-50">
           <div className="flex items-center space-x-4">
@@ -269,8 +317,8 @@ const Chat: React.FC<ChatProps> = ({
             </button>
           </div>
         </footer>
-      </section>
-    </div>
+      </section >
+    </div >
   );
 };
 

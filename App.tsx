@@ -138,8 +138,6 @@ const App: React.FC = () => {
       .then(data => setMessages(data))
       .catch(err => console.error('Erro loading messages:', err));
 
-    initializeSocket(currentUser.id, currentUser.name);
-
     const handleNewMessage = (msg: ChatMessage) => {
       setMessages(prev => [...prev, msg]);
       const isViewing = activeTabRef.current === 'chat' && activeRoomRef.current === msg.roomId;
@@ -149,10 +147,17 @@ const App: React.FC = () => {
       }
     };
 
+    const socket = initializeSocket(currentUser.id, currentUser.name);
+
     onNewMessage(handleNewMessage);
+
+    socket?.on('error', (err: any) => {
+      showToast(err.message || 'Erro no servidor de chat', 'error');
+    });
 
     return () => {
       offNewMessage(handleNewMessage);
+      socket?.off('error');
       disconnectSocket();
     };
   }, [currentUser]);
@@ -316,7 +321,10 @@ const App: React.FC = () => {
               onSendMessage={(content, roomId, senderOverride) => {
                 const sId = senderOverride?.id || currentUser.id;
                 const sName = senderOverride?.name || currentUser.name;
-                sendSocketMessage(sId, sName, content, roomId);
+                const success = sendSocketMessage(sId, sName, content, roomId);
+                if (!success) {
+                  showToast('Falha ao enviar: Sem conexão com o servidor', 'error');
+                }
               }}
               unreadCounts={unreadCounts} onReadRoom={(id) => setUnreadCounts(p => ({ ...p, [id]: 0 }))}
             />

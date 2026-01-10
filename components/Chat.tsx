@@ -165,10 +165,14 @@ const Chat: React.FC<ChatProps> = ({
     if (!inputValue.trim()) return;
     const currentMsg = inputValue;
     const currentRoomId = activeRoomId;
-    setInputValue('');
+
+    // Tentamos enviar. Se falhar (ex: sem socket), o App mostra o toast
     onSendMessage(currentMsg, currentRoomId);
 
-    // O backend agora lida com a resposta da IA
+    // Neste caso, como onSendMessage não retorna nada diretamente (é via prop),
+    // limpamos o input assumindo que o socket tratará do resto.
+    // Se quisermos ser mais rigorosos, poderíamos passar um callback.
+    setInputValue('');
   };
 
   return (

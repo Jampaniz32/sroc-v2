@@ -1,22 +1,31 @@
 import { io, Socket } from 'socket.io-client';
 
 const getSocketUrl = () => {
-    const envUrl = import.meta.env.VITE_SOCKET_URL;
     const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    let envUrl = import.meta.env.VITE_SOCKET_URL;
+    let apiUrl = import.meta.env.VITE_API_URL;
 
-    // Se temos um URL no env e não é localhost (ou se estamos de facto no localhost), usamos esse
-    if (envUrl && (!envUrl.includes('localhost') || isLocal)) {
-        return envUrl;
+    // Se estivermos em produção mas o envUrl aponta para localhost, ignoramos
+    if (!isLocal && envUrl && envUrl.includes('localhost')) {
+        console.warn('⚠️ VITE_SOCKET_URL aponta para localhost em produção. Tentando detetar URL correto...');
+        envUrl = '';
     }
 
-    // Fallback dinâmico para produção: se estamos num .vercel.app, o backend deve estar num .railway.app
-    // Muitas vezes o nome é similar. Como não sabemos, tentamos manter o localhost como último recurso
-    // mas avisamos no log.
+    if (envUrl) return envUrl;
+
+    // Fallback inteligente: basear no URL da API ou no hostname atual
+    if (apiUrl && !apiUrl.includes('localhost')) {
+        return apiUrl.replace('/api', '');
+    }
+
     if (!isLocal) {
-        console.warn('⚠️ SOCKET_URL não configurado ou aponta para localhost em produção!');
+        // Se estamos num domínio .vercel.app, tentamos encontrar o backend no railway
+        // Geralmente o utilizador tem ambos com nomes similares ou configurados.
+        // Como último recurso, usamos o próprio host (URL relativo pode funcionar se houver proxy)
+        return window.location.origin;
     }
 
-    return envUrl || 'http://localhost:3001';
+    return 'http://localhost:3001';
 };
 
 const SOCKET_URL = getSocketUrl();
@@ -52,6 +61,14 @@ export const initializeSocket = (userId: string, userName: string) => {
         console.log('Current SOCKET_URL:', SOCKET_URL);
     });
 
+    socket.on('error', (error) => {
+        console.error('⚠️ Socket error:', error);
+    });
+
+    socket.on('reconnect_attempt', (attempt) => {
+        console.log(`🔄 Socket reconnect attempt #${attempt}`);
+    });
+
     return socket;
 };
 
@@ -74,8 +91,10 @@ export const sendMessage = (senderId: string, senderName: string, content: strin
             content,
             roomId,
         });
+        return true;
     } else {
         console.error('Socket not connected');
+        return false;
     }
 };
 

@@ -32,11 +32,24 @@ console.log('🔒 Allowed Origins:', allowedOrigins);
 
 const io = new Server(httpServer, {
     cors: {
-        origin: allowedOrigins,
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            const isAllowed = allowedOrigins.some(ao =>
+                ao === '*' ||
+                ao === origin ||
+                (origin.endsWith('.vercel.app') && !ao.includes('localhost')) ||
+                origin.endsWith('.railway.app')
+            );
+            if (isAllowed) {
+                callback(null, true);
+            } else {
+                callback(new Error('Not allowed by CORS'));
+            }
+        },
         methods: ['GET', 'POST'],
         credentials: true
     },
-    allowEIO3: true // compatibility for older clients
+    allowEIO3: true
 });
 
 // Middleware
@@ -107,7 +120,7 @@ io.on('connection', (socket) => {
             // Enviar lista de usuários ativos
             io.emit('activeUsers', Array.from(activeUsers.keys()));
 
-            console.log(`👤 ${name} (${userId}) entrou no SROC. Sala atual: ${socket.currentRoom}`);
+            console.log(`👤 ${name} (${userId}) entrou. Rooms: ${Array.from(socket.rooms).join(', ')}`);
         } catch (error) {
             console.error('Join error:', error);
         }
@@ -172,7 +185,13 @@ io.on('connection', (socket) => {
             } else {
                 // DM: Envia para os dois envolvidos
                 const participants = roomId.split('_');
+                console.log(`📩 DM ${roomId}: Enviar para ${participants.join(' e ')}`);
+
                 participants.forEach(pId => {
+                    const isOnline = activeUsers.has(pId);
+                    if (!isOnline) {
+                        console.log(`⚠️ Destinatário ${pId} está offline, mas a mensagem foi gravada.`);
+                    }
                     io.to(`user_${pId}`).emit('newMessage', message);
                 });
             }

@@ -225,6 +225,16 @@ export const sendPushNotification = (title: string, body: string) => {
   }
 };
 
+export const playNotificationSound = () => {
+  try {
+    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    audio.volume = 0.5;
+    audio.play().catch(e => console.warn('Falha ao reproduzir áudio (interação necessária):', e));
+  } catch (e) {
+    console.error('Erro ao tocar som:', e);
+  }
+};
+
 // --- CONFIGURAÇÃO DE COLUNAS DE EXPORTAÇÃO ---
 
 const EXPORT_COLUMNS_MAP: Record<string, { label: string, getValue: (r: CallRecord) => string }> = {

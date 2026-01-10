@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, UserRole, CallRecord, Shift, SystemConfig, Toast, ChatMessage } from './types';
-import { getCurrentShift, requestNotificationPermission, sendPushNotification } from './utils';
+import { getCurrentShift, requestNotificationPermission, sendPushNotification, playNotificationSound } from './utils';
 import { callsAPI, usersAPI, authAPI, messagesAPI } from './services/api';
 import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, sendMessage as sendSocketMessage } from './services/socket';
 import Login from './components/Login';
@@ -140,10 +140,20 @@ const App: React.FC = () => {
 
     const handleNewMessage = (msg: ChatMessage) => {
       setMessages(prev => [...prev, msg]);
+
       const isViewing = activeTabRef.current === 'chat' && activeRoomRef.current === msg.roomId;
-      if (!isViewing) {
+
+      // Notificar se não estiver a ver a conversa ou se a aba estiver inativa
+      if (!isViewing || document.hidden) {
         setUnreadCounts(prev => ({ ...prev, [msg.roomId]: (prev[msg.roomId] || 0) + 1 }));
-        showToast(`Nova mensagem de ${msg.senderName}`, 'info');
+        showToast(`Mensagem de ${msg.senderName}`, 'info');
+        playNotificationSound();
+
+        // Push Notification se a aplicação suportar/tiver permissão
+        sendPushNotification(
+          `Nova mensagem de ${msg.senderName}`,
+          msg.content.substring(0, 100)
+        );
       }
     };
 

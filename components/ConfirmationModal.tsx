@@ -34,7 +34,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 {icon}
               </div>
             )}
-            
+
             <h3 className="text-2xl font-black text-slate-800 tracking-tight mb-2">{title}</h3>
             <p className="text-slate-500 font-medium text-sm leading-relaxed mb-8">
               {message}
@@ -55,7 +55,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               </button>
             </div>
           </div>
-          
+
           <div className="bg-slate-50 p-4 border-t border-slate-100 text-center">
             <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">SROC Confirmation Protocol</p>
           </div>

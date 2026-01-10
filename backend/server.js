@@ -23,19 +23,42 @@ const app = express();
 const httpServer = createServer(app);
 
 // CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:3000')
+    .split(',')
+    .map(origin => origin.trim())
+    .filter(origin => origin.length > 0);
+
+console.log('🔒 Allowed Origins:', allowedOrigins);
 
 const io = new Server(httpServer, {
     cors: {
         origin: allowedOrigins,
         methods: ['GET', 'POST'],
         credentials: true
-    }
+    },
+    allowEIO3: true // compatibility for older clients
 });
 
 // Middleware
 app.use(cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+        // Permitir requests sem origin (como apps mobile ou curl)
+        if (!origin) return callback(null, true);
+
+        const isAllowed = allowedOrigins.some(ao =>
+            ao === '*' ||
+            ao === origin ||
+            (origin.endsWith('.vercel.app') && !ao.includes('localhost')) ||
+            origin.endsWith('.railway.app')
+        );
+
+        if (isAllowed) {
+            callback(null, true);
+        } else {
+            console.warn(`⚠️ CORS blocked for origin: ${origin}`);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     exposedHeaders: ['Content-Disposition']
 }));

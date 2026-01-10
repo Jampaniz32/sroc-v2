@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { SystemConfig, User, CallRecord, ExportFormat } from '../types';
 import { TIMEZONES, DATE_FORMATS } from '../constants';
-import { exportAuditPackage } from '../utils';
+import { exportAuditPackage, requestNotificationPermission, sendPushNotification, playNotificationSound } from '../utils';
 import UserManagement from './UserManagement';
 import ObservationTemplatesManager from './ObservationTemplatesManager';
 import BackupSettings from './BackupSettings';
@@ -464,6 +464,65 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                     </div>
                   </div>
                 ))}
+              </div>
+
+              <div className="pt-8 border-t border-slate-50">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">Central de Notificações</h4>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">Configure como o sistema o alerta em produção</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <button
+                    onClick={() => {
+                      requestNotificationPermission();
+                      showToast('Permissão solicitada ao navegador', 'info');
+                    }}
+                    className="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-md transition-all group"
+                  >
+                    <div className="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 rounded-full flex items-center justify-center mb-3 transition-colors">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Ativar Push</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      playNotificationSound();
+                      showToast('A reproduzir som de teste...', 'info');
+                    }}
+                    className="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-emerald-300 hover:shadow-md transition-all group"
+                  >
+                    <div className="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 rounded-full flex items-center justify-center mb-3 transition-colors">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Testar Som</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      sendPushNotification('Teste de Notificação', 'Se está a ler isto, as notificações estão a funcionar corretamente!');
+                      showToast('Notificação de teste enviada', 'success');
+                    }}
+                    className="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-amber-300 hover:shadow-md transition-all group"
+                  >
+                    <div className="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-600 rounded-full flex items-center justify-center mb-3 transition-colors">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Testar Push</span>
+                  </button>
+                </div>
+
+                <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 italic">
+                  <p className="text-[9px] text-slate-400 font-medium leading-relaxed">
+                    <strong>Dica de Produção:</strong> Se o som não tocar, certifique-se de que clicou em pelo menos um botão do sistema após carregar a página. A maioria dos browsers bloqueia áudio automático até haver interação.
+                  </p>
+                </div>
               </div>
             </div>
           </section>

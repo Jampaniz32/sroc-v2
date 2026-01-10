@@ -139,21 +139,30 @@ const App: React.FC = () => {
       .catch(err => console.error('Erro loading messages:', err));
 
     const handleNewMessage = (msg: ChatMessage) => {
+      console.log('📨 New message received via socket:', msg);
       setMessages(prev => [...prev, msg]);
 
       const isViewing = activeTabRef.current === 'chat' && activeRoomRef.current === msg.roomId;
+      const isDocumentHidden = document.hidden;
+
+      console.log(`🔔 Notification check - Viewing Room: ${isViewing}, Hidden: ${isDocumentHidden}`);
 
       // Notificar se não estiver a ver a conversa ou se a aba estiver inativa
-      if (!isViewing || document.hidden) {
+      if (!isViewing || isDocumentHidden) {
         setUnreadCounts(prev => ({ ...prev, [msg.roomId]: (prev[msg.roomId] || 0) + 1 }));
         showToast(`Mensagem de ${msg.senderName}`, 'info');
+
+        console.log('🎵 Playing notification sound...');
         playNotificationSound();
 
         // Push Notification se a aplicação suportar/tiver permissão
-        sendPushNotification(
-          `Nova mensagem de ${msg.senderName}`,
-          msg.content.substring(0, 100)
-        );
+        if (isDocumentHidden) {
+          console.log('📲 Sending push notification...');
+          sendPushNotification(
+            `Nova mensagem de ${msg.senderName}`,
+            msg.content.substring(0, 100)
+          );
+        }
       }
     };
 

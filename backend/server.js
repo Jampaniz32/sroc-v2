@@ -120,6 +120,22 @@ io.on('connection', (socket) => {
             // Enviar lista de usuários ativos
             io.emit('activeUsers', Array.from(activeUsers.keys()));
 
+            // Notificação de mensagens offline (não lidas)
+            // Busca DMs onde o utilizador é participante e tem mensagens is_read = 0 de outros
+            const [unread] = await db.query(
+                `SELECT sender_name, COUNT(*) as count 
+                 FROM messages 
+                 WHERE is_read = 0 
+                   AND sender_id != ? 
+                   AND (room_id LIKE ? OR room_id LIKE ?)
+                 GROUP BY sender_name`,
+                [userId, `${userId}_%`, `%_${userId}`]
+            );
+
+            if (unread.length > 0) {
+                socket.emit('offlineMessages', unread);
+            }
+
             console.log(`👤 ${name} (${userId}) entrou. Rooms: ${Array.from(socket.rooms).join(', ')}`);
         } catch (error) {
             console.error('Join error:', error);

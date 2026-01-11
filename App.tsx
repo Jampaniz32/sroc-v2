@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, UserRole, CallRecord, Shift, SystemConfig, Toast, ChatMessage } from './types';
 import { getCurrentShift, requestNotificationPermission, sendPushNotification, playNotificationSound } from './utils';
 import { callsAPI, usersAPI, authAPI, messagesAPI } from './services/api';
-import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, sendMessage as sendSocketMessage } from './services/socket';
+import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, onOfflineMessages, offOfflineMessages, sendMessage as sendSocketMessage } from './services/socket';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -177,8 +177,22 @@ const App: React.FC = () => {
       showToast(err.message || 'Erro no servidor de chat', 'error');
     });
 
+    const handleOfflineMessages = (unreadList: any[]) => {
+      unreadList.forEach(item => {
+        showToast(`Recebeu ${item.count} mensagem(ns) de ${item.sender_name} enquanto esteve offline`, 'info');
+        playNotificationSound();
+        sendPushNotification(
+          `Mensagens de ${item.sender_name}`,
+          `Você tem ${item.count} novas mensagens não lidas.`
+        );
+      });
+    };
+
+    onOfflineMessages(handleOfflineMessages);
+
     return () => {
       offNewMessage(handleNewMessage);
+      offOfflineMessages(handleOfflineMessages);
       socket?.off('error');
       disconnectSocket();
     };
@@ -348,7 +362,13 @@ const App: React.FC = () => {
                   showToast('Falha ao enviar: Sem conexão com o servidor', 'error');
                 }
               }}
-              unreadCounts={unreadCounts} onReadRoom={(id) => setUnreadCounts(p => ({ ...p, [id]: 0 }))}
+              unreadCounts={unreadCounts}
+              onReadRoom={(id) => {
+                setUnreadCounts(p => ({ ...p, [id]: 0 }));
+                if (currentUser) {
+                  messagesAPI.markAsRead(id).catch(err => console.error('Erro marking as read:', err));
+                }
+              }}
             />
           }
           {activeTab === 'calls' && <CallList calls={calls} user={currentUser} users={users} systemConfig={systemConfig} onDeleteCall={deleteCall} onUpdateCall={updateCall} />}

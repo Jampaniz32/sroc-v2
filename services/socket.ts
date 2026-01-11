@@ -132,6 +132,10 @@ export const onUserStoppedTyping = (callback: (data: any) => void) => {
     socket?.on('userStoppedTyping', callback);
 };
 
+export const onOfflineMessages = (callback: (data: any[]) => void) => {
+    socket?.on('offlineMessages', callback);
+};
+
 export const offNewMessage = (callback: (message: any) => void) => {
     socket?.off('newMessage', callback);
 };
@@ -146,4 +150,8 @@ export const offUserTyping = (callback: (data: any) => void) => {
 
 export const offUserStoppedTyping = (callback: (data: any) => void) => {
     socket?.off('userStoppedTyping', callback);
+};
+
+export const offOfflineMessages = (callback: (data: any[]) => void) => {
+    socket?.off('offlineMessages', callback);
 };

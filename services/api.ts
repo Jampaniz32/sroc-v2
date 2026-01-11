@@ -135,6 +135,11 @@ export const messagesAPI = {
         const response = await api.get(`/messages/${roomId}`);
         return response.data;
     },
+
+    markAsRead: async (roomId: string) => {
+        const response = await api.post(`/messages/read/${roomId}`);
+        return response.data;
+    },
 };
 
 // Clients API

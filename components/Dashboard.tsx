@@ -354,73 +354,73 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
               </div>
             </div>
 
-            {/* Recent Activity */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-black text-slate-800">Atividade Recente</h3>
-                <button
-                  onClick={() => setActiveTab('calls')}
-                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
-                >
-                  Ver Todos →
-                </button>
-              </div>
-              <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
-                {statsData.recent.map(call => (
-                  <div key={call.id} className="p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                    <div className="flex justify-between items-start gap-2">
-                      <div className="min-w-0 flex-1">
-                        <p className="font-bold text-slate-800 truncate text-xs">{formatName(call.cliente)}</p>
-                        <p className="text-[10px] text-slate-500 truncate">
-                          {toTitleCase(call.tipoPedido === 'Outro' ? call.outroTipoPedido : call.tipoPedido)}
-                        </p>
-                      </div>
-                      <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase shrink-0 ${call.estagio === 'Resolvido' ? 'bg-emerald-100 text-emerald-600'
-                        : call.estagio === 'Pendente' ? 'bg-orange-100 text-orange-600'
-                          : 'bg-amber-100 text-amber-600'
+            {/* Agent Ranking (Admin only) - Now in main grid */}
+            {isAdmin && (
+              <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <h3 className="text-lg font-black text-slate-800 mb-4">Ranking de Agentes</h3>
+                <div className="space-y-3">
+                  {statsData.agentRanking.map(([name, data]: any, index) => (
+                    <div key={name} className="flex items-center gap-3">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 ${index === 0 ? 'bg-yellow-500 shadow-md shadow-yellow-200' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-300'
                         }`}>
-                        {call.estagio}
-                      </span>
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-700 truncate">{name}</p>
+                        <p className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">{data.resolved}/{data.count} resolvidos</p>
+                      </div>
+                      <span className="text-lg font-black text-indigo-600">{data.count}</span>
                     </div>
-                    <p className="text-[9px] text-slate-400 mt-1">
-                      {new Date(call.data).toLocaleDateString('pt-PT')} • {new Date(call.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
-                    </p>
-                  </div>
-                ))}
-                {statsData.recent.length === 0 && (
-                  <p className="text-center text-slate-400 py-8 text-xs font-bold uppercase">Sem registos</p>
-                )}
+                  ))}
+                  {statsData.agentRanking.length === 0 && (
+                    <p className="text-center text-slate-400 py-4 text-xs font-bold uppercase">Sem dados</p>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
         {/* Right Column - Sidebar Statistics */}
         <div className="space-y-6">
-          {/* Agent Ranking (Admin only) */}
-          {isAdmin && (
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
-              <h3 className="text-lg font-black text-slate-800 mb-4">Ranking de Agentes</h3>
-              <div className="space-y-3">
-                {statsData.agentRanking.map(([name, data]: any, index) => (
-                  <div key={name} className="flex items-center gap-3">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 ${index === 0 ? 'bg-yellow-500 shadow-md shadow-yellow-200' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-300'
-                      }`}>
-                      {index + 1}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-700 truncate">{name}</p>
-                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">{data.resolved}/{data.count} resolvidos</p>
-                    </div>
-                    <span className="text-lg font-black text-indigo-600">{data.count}</span>
-                  </div>
-                ))}
-                {statsData.agentRanking.length === 0 && (
-                  <p className="text-center text-slate-400 py-4 text-xs font-bold uppercase">Sem dados</p>
-                )}
-              </div>
+          {/* Recent Activity - Now in sidebar */}
+          <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-black text-slate-800">Atividade Recente</h3>
+              <button
+                onClick={() => setActiveTab('calls')}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+              >
+                Ver Todos →
+              </button>
             </div>
-          )}
+            <div className="space-y-3 max-h-[340px] overflow-y-auto custom-scrollbar">
+              {statsData.recent.map(call => (
+                <div key={call.id} className="p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-slate-800 truncate text-xs">{formatName(call.cliente)}</p>
+                      <p className="text-[10px] text-slate-500 truncate">
+                        {toTitleCase(call.tipoPedido === 'Outro' ? call.outroTipoPedido : call.tipoPedido)}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase shrink-0 ${call.estagio === 'Resolvido' ? 'bg-emerald-100 text-emerald-600'
+                      : call.estagio === 'Pendente' ? 'bg-orange-100 text-orange-600'
+                        : 'bg-amber-100 text-amber-600'
+                      }`}>
+                      {call.estagio}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 mt-1">
+                    {new Date(call.data).toLocaleDateString('pt-PT')} • {new Date(call.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              ))}
+              {statsData.recent.length === 0 && (
+                <p className="text-center text-slate-400 py-8 text-xs font-bold uppercase">Sem registos</p>
+              )}
+            </div>
+          </div>
 
           {/* Online Users (Admin only) */}
           {isAdmin && (

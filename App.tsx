@@ -36,6 +36,7 @@ const App: React.FC = () => {
   const [currentShift, setCurrentShift] = useState<Shift>(getCurrentShift());
   const [unreadCounts, setUnreadCounts] = useState<Record<string, number>>({});
   const [activeChatRoomId, setActiveChatRoomId] = useState<string>('global');
+  const [onlineUserIds, setOnlineUserIds] = useState<string[]>([]);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   const activeTabRef = useRef(activeTab);
@@ -217,10 +218,15 @@ const App: React.FC = () => {
       setUnreadCounts(prev => ({ ...prev, [data.roomId]: 0 }));
     };
 
+    const handleActiveUsers = (userIds: string[]) => {
+      setOnlineUserIds(userIds);
+    };
+
     onOfflineMessages(handleOfflineMessages);
     onMessageUpdated(handleMessageUpdated);
     onMessageDeleted(handleMessageDeleted);
     onChatCleared(handleChatCleared);
+    socket?.on('activeUsers', handleActiveUsers);
 
     return () => {
       offNewMessage(handleNewMessage);
@@ -228,6 +234,7 @@ const App: React.FC = () => {
       offMessageUpdated(handleMessageUpdated);
       offMessageDeleted(handleMessageDeleted);
       offChatCleared(handleChatCleared);
+      socket?.off('activeUsers', handleActiveUsers);
       socket?.off('error');
       disconnectSocket();
     };
@@ -393,7 +400,7 @@ const App: React.FC = () => {
         </header>
 
         <div className="pt-8 space-y-8">
-          {activeTab === 'dashboard' && <Dashboard calls={calls} user={currentUser} setActiveTab={setActiveTab} />}
+          {activeTab === 'dashboard' && <Dashboard calls={calls} user={currentUser} users={users} onlineUserIds={onlineUserIds} setActiveTab={setActiveTab} />}
           {activeTab === 'new-call' && <CallForm onAdd={addCall} user={currentUser} />}
           {activeTab === 'chat' &&
             <Chat

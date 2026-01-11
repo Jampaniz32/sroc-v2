@@ -5,6 +5,8 @@ import { toTitleCase, formatName } from '../utils';
 interface DashboardProps {
   calls: CallRecord[];
   user: User;
+  users?: User[];
+  onlineUserIds?: string[];
   setActiveTab: (tab: any) => void;
 }
 
@@ -62,7 +64,7 @@ const ProgressRing: React.FC<{ progress: number; size?: number; strokeWidth?: nu
   );
 };
 
-const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, setActiveTab }) => {
+const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onlineUserIds = [], setActiveTab }) => {
   const [selectedPeriod, setSelectedPeriod] = useState<'today' | 'week' | 'month'>('week');
   const safeCalls = Array.isArray(calls) ? calls : [];
 
@@ -379,9 +381,50 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, setActiveTab })
             </div>
           )}
 
+          {/* Online Users (Admin only) */}
+          {isAdmin && (
+            <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="flex items-center waves-effect justify-between mb-4">
+                <h3 className="text-lg font-black text-slate-800">Utilizadores Online</h3>
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  {onlineUserIds.length} Ativos
+                </span>
+              </div>
+              <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar">
+                {users.filter(u => onlineUserIds.includes(String(u.id))).map(u => (
+                  <div key={u.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-all group">
+                    <div className="relative">
+                      <div className="w-9 h-9 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center font-black text-sm group-hover:scale-110 transition-transform">
+                        {u.name.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-800 truncate">{u.name}</p>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">{u.role === UserRole.ADMIN ? 'Administrador' : (u.agency || 'Agente')}</p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('chat')}
+                      className="p-2 text-slate-300 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all"
+                      title="Enviar Mensagem"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                    </button>
+                  </div>
+                ))}
+                {users.filter(u => onlineUserIds.includes(String(u.id))).length === 0 && (
+                  <div className="py-8 text-center bg-slate-50/50 rounded-2xl border border-dashed border-slate-200">
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Ninguém online</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Recent Activity */}
           <div className="bg-white rounded-2xl border shadow-sm p-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center waves-effect justify-between mb-4">
               <h3 className="text-lg font-black text-slate-800">Atividade Recente</h3>
               <button
                 onClick={() => setActiveTab('calls')}

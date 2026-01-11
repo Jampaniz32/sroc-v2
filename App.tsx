@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, UserRole, CallRecord, Shift, SystemConfig, Toast, ChatMessage } from './types';
 import { getCurrentShift, requestNotificationPermission, sendPushNotification, playNotificationSound } from './utils';
-import { callsAPI, usersAPI, authAPI, messagesAPI } from './services/api';
+import { callsAPI, usersAPI, authAPI, messagesAPI, configAPI } from './services/api';
 import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, onOfflineMessages, offOfflineMessages, sendMessage as sendSocketMessage } from './services/socket';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
@@ -24,32 +24,6 @@ const TAB_NAMES: Record<string, string> = {
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      const token = localStorage.getItem('sroc_token');
-      const savedUser = localStorage.getItem('sroc_session_user');
-
-      if (!token || !savedUser) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        await authAPI.verify();
-        setCurrentUser(JSON.parse(savedUser));
-      } catch (error) {
-        console.error('Sessão inválida ou expirada:', error);
-        authAPI.logout();
-        setCurrentUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkSession();
-  }, []);
-
   const [activeTab, setActiveTab] = useState<string>(() => {
     return localStorage.getItem('sroc_active_tab') || 'dashboard';
   });
@@ -94,11 +68,53 @@ const App: React.FC = () => {
     return Object.values(unreadCounts).reduce((acc: number, count: number) => acc + count, 0);
   }, [unreadCounts]);
 
+  // Use effects
+  useEffect(() => {
+    const checkSession = async () => {
+      const token = localStorage.getItem('sroc_token');
+      const savedUser = localStorage.getItem('sroc_session_user');
+
+      if (!token || !savedUser) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        await authAPI.verify();
+        setCurrentUser(JSON.parse(savedUser));
+      } catch (error) {
+        console.error('Sessão inválida ou expirada:', error);
+        authAPI.logout();
+        setCurrentUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const loadConfig = async () => {
+      try {
+        const config = await configAPI.get();
+        if (config && config.institutionName) {
+          setSystemConfig(prev => ({ ...prev, ...config }));
+        }
+      } catch (err) {
+        console.error('Erro ao carregar config do servidor:', err);
+      }
+    };
+
+    checkSession();
+    loadConfig();
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('sroc_config', JSON.stringify(systemConfig));
   }, [systemConfig]);
 
-  useEffect(() => { activeTabRef.current = activeTab; }, [activeTab]);
+  useEffect(() => {
+    localStorage.setItem('sroc_active_tab', activeTab);
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
+
   useEffect(() => { activeRoomRef.current = activeChatRoomId; }, [activeChatRoomId]);
 
   useEffect(() => {
@@ -137,11 +153,8 @@ const App: React.FC = () => {
     messagesAPI.getAll()
       .then(data => {
         setMessages(data);
-
-        // Calcular contagem inicial de não lidas
         const counts: Record<string, number> = {};
         data.forEach((m: any) => {
-          // Se sou o destinatário e a mensagem não foi lida
           if (String(m.senderId) !== String(currentUser.id) && !m.isRead) {
             counts[m.roomId] = (counts[m.roomId] || 0) + 1;
           }
@@ -151,38 +164,23 @@ const App: React.FC = () => {
       .catch(err => console.error('Erro loading messages:', err));
 
     const handleNewMessage = (msg: ChatMessage) => {
-      console.log('📨 New message received via socket:', msg);
       setMessages(prev => [...prev, msg]);
-
-      // Não notificar o próprio utilizador
       if (String(msg.senderId) === String(currentUser.id)) return;
 
       const isViewing = activeTabRef.current === 'chat' && activeRoomRef.current === msg.roomId;
       const isDocumentHidden = document.hidden;
 
-      console.log(`🔔 Notification check - Viewing Room: ${isViewing}, Hidden: ${isDocumentHidden}`);
-
-      // Notificar se não estiver a ver a conversa ou se a aba estiver inativa
       if (!isViewing || isDocumentHidden) {
         setUnreadCounts(prev => ({ ...prev, [msg.roomId]: (prev[msg.roomId] || 0) + 1 }));
         showToast(`Mensagem de ${msg.senderName}`, 'info');
-
-        console.log('🎵 Playing notification sound...');
         playNotificationSound();
-
-        // Push Notification se a aplicação suportar/tiver permissão
         if (isDocumentHidden) {
-          console.log('📲 Sending push notification...');
-          sendPushNotification(
-            `Nova mensagem de ${msg.senderName}`,
-            msg.content.substring(0, 100)
-          );
+          sendPushNotification(`Nova mensagem de ${msg.senderName}`, msg.content.substring(0, 100));
         }
       }
     };
 
     const socket = initializeSocket(currentUser.id, currentUser.name);
-
     onNewMessage(handleNewMessage);
 
     socket?.on('error', (err: any) => {
@@ -193,10 +191,7 @@ const App: React.FC = () => {
       unreadList.forEach(item => {
         showToast(`Recebeu ${item.count} mensagem(ns) de ${item.sender_name} enquanto esteve offline`, 'info');
         playNotificationSound();
-        sendPushNotification(
-          `Mensagens de ${item.sender_name}`,
-          `Você tem ${item.count} novas mensagens não lidas.`
-        );
+        sendPushNotification(`Mensagens de ${item.sender_name}`, `Você tem ${item.count} novas mensagens não lidas.`);
       });
     };
 
@@ -273,6 +268,16 @@ const App: React.FC = () => {
       setUsers(prev => [...prev, newUser]);
       showToast('Utilizador criado!');
     }).catch(err => showToast('Erro ao criar utilziador', 'error'));
+  };
+
+  const updateConfig = (newConfig: SystemConfig) => {
+    setSystemConfig(newConfig);
+    configAPI.update(newConfig)
+      .then(() => showToast('Configurações salvas e aplicadas globalmente'))
+      .catch(err => {
+        console.error('Erro ao salvar config no servidor:', err);
+        showToast('Erro ao sincronizar com o servidor', 'error');
+      });
   };
 
   const updateUser = (userData: User) => {
@@ -387,7 +392,7 @@ const App: React.FC = () => {
           {activeTab === 'settings' && currentUser.role === UserRole.ADMIN && (
             <Settings
               config={systemConfig}
-              onUpdate={setSystemConfig}
+              onUpdate={updateConfig}
               users={users}
               onAddUser={addUser}
               onUpdateUser={updateUser}

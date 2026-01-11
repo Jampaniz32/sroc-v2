@@ -142,6 +142,18 @@ export const messagesAPI = {
     },
 };
 
+// Config API
+export const configAPI = {
+    get: async () => {
+        const response = await api.get('/config');
+        return response.data;
+    },
+    update: async (configData: any) => {
+        const response = await api.post('/config', configData);
+        return response.data;
+    }
+};
+
 // Clients API
 export const clientsAPI = {
     searchByNuit: async (nuit: string) => {

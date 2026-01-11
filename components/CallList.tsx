@@ -159,13 +159,17 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
         let filename = `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.${extension}`;
 
         if (contentDisposition) {
-          // Tentar vários padrões de extração
-          const filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-          const matches = filenameRegex.exec(contentDisposition);
-          if (matches != null && matches[1]) {
-            filename = matches[1].replace(/['"]/g, '');
-            console.log('✅ Nome extraído do header:', filename);
+          // Tentar extrair filename* (UTF-8) primeiro, depois filename padrão
+          const filenameStarMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+          if (filenameStarMatch && filenameStarMatch[1]) {
+            filename = decodeURIComponent(filenameStarMatch[1]);
+          } else {
+            const filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/i);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1];
+            }
           }
+          console.log('✅ Nome processado do header:', filename);
         }
 
         console.log('📁 Nome final do ficheiro:', filename);

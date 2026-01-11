@@ -109,8 +109,9 @@ router.get('/', async (req, res) => {
             const fileDateRange = firstDate === lastDate ? firstDate : `${firstDate}_a_${lastDate}`;
             const fileName = `RELATÓRIO DE CHAMADA - ${fileDateRange}.csv`;
 
+            const safeFileName = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-            res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(fileName)}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+            res.setHeader('Content-Disposition', `attachment; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
             return res.send(Buffer.from(csvContent, 'utf-8'));
         }
 
@@ -276,8 +277,9 @@ router.get('/', async (req, res) => {
         const fileName = `RELATÓRIO DE CHAMADA - ${fileDateRange}.xlsx`;
 
         // Headers
+        const safeFileName = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(fileName)}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
+        res.setHeader('Content-Disposition', `attachment; filename="${safeFileName}"; filename*=UTF-8''${encodeURIComponent(fileName)}`);
 
         // Enviar
         res.send(buffer);

@@ -303,12 +303,16 @@ const exportToExcel = async (data: CallRecord[], config: SystemConfig) => {
     let filename = `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.xlsx`;
 
     if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      console.log('🔍 Regex match:', filenameMatch);
-      if (filenameMatch && filenameMatch[1]) {
-        filename = filenameMatch[1].replace(/['"]/g, '');
-        console.log('✅ Nome extraído:', filename);
+      const filenameStarMatch = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+      if (filenameStarMatch && filenameStarMatch[1]) {
+        filename = decodeURIComponent(filenameStarMatch[1]);
+      } else {
+        const filenameMatch = contentDisposition.match(/filename="?([^";\n]+)"?/i);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1];
+        }
       }
+      console.log('✅ Nome processado:', filename);
     }
 
     console.log('📁 Nome final:', filename);

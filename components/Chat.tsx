@@ -35,6 +35,7 @@ const Chat: React.FC<ChatProps> = ({
   const [typingUsers, setTypingUsers] = useState<Record<string, string[]>>({});
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const safeMessages = useMemo(() => Array.isArray(messages) ? messages : [], [messages]);
@@ -216,12 +217,11 @@ const Chat: React.FC<ChatProps> = ({
   };
 
   const handleClearChat = async () => {
-    if (window.confirm(`Deseja realmente eliminar TODO o histórico de "${activeRoom?.name}"? Esta ação não pode ser desfeita.`)) {
-      try {
-        await onClearChat(activeRoomId);
-      } catch (e) {
-        console.error('Erro ao limpar chat:', e);
-      }
+    try {
+      await onClearChat(activeRoomId);
+      setShowClearConfirm(false);
+    } catch (e) {
+      console.error('Erro ao limpar chat:', e);
     }
   };
 
@@ -305,12 +305,13 @@ const Chat: React.FC<ChatProps> = ({
 
           {(currentUser.role === 'ADMIN' || activeRoomId.includes('_')) && (
             <button
-              onClick={handleClearChat}
-              className="group flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest shadow-sm"
-              title="Eliminar todo o histórico"
+              onClick={() => setShowClearConfirm(true)}
+              className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all flex items-center justify-center shadow-sm border border-rose-100 group"
+              title="Limpar histórico"
             >
-              <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-              <span>Limpar Conversa</span>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
             </button>
           )}
         </header>
@@ -424,6 +425,37 @@ const Chat: React.FC<ChatProps> = ({
             </button>
           </div>
         </footer>
+
+        {/* Modal de Confirmação de Limpeza */}
+        {showClearConfirm && (
+          <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+            <div className="bg-white rounded-[2.5rem] shadow-2xl p-8 max-w-sm w-full border border-slate-100 animate-in zoom-in-95 duration-300">
+              <div className="w-16 h-16 bg-rose-100 text-rose-600 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+              <h5 className="text-xl font-black text-slate-800 text-center mb-2">Limpar Histórico?</h5>
+              <p className="text-slate-500 text-center text-sm leading-relaxed mb-8">
+                Esta ação irá eliminar permanentemente todas as mensagens da sala <span className="font-bold text-slate-800">"{activeRoom?.name}"</span>.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={() => setShowClearConfirm(false)}
+                  className="px-6 py-3 rounded-2xl bg-slate-100 text-slate-600 font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleClearChat}
+                  className="px-6 py-3 rounded-2xl bg-rose-600 text-white font-black text-[10px] uppercase tracking-widest hover:bg-rose-700 shadow-lg shadow-rose-200 transition-all active:scale-95"
+                >
+                  Sim, Limpar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </section >
     </div >
   );

@@ -306,50 +306,53 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Charts */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Stage Distribution */}
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
-            <h3 className="text-lg font-black text-slate-800 mb-4">Distribuição por Estado</h3>
-            <div className="space-y-3">
-              {Object.entries(statsData.stageDistribution).map(([stage, count]) => {
-                const percentage = statsData.periodCount > 0 ? Math.round(((count as number) / (statsData.periodCount as number)) * 100) : 0;
-                return (
-                  <div key={stage} className="flex items-center gap-4">
-                    <span className="text-sm font-medium text-slate-600 w-32 truncate">{stage}</span>
-                    <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full ${stageColors[stage] || 'bg-slate-400'} rounded-full transition-all duration-500`}
-                        style={{ width: `${percentage}%` }}
-                      />
+          {/* Type Distribution and Stage Distribution */}
+          <div className="space-y-6">
+            {/* Stage Distribution */}
+            <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <h3 className="text-lg font-black text-slate-800 mb-4">Distribuição por Estado</h3>
+              <div className="space-y-3">
+                {Object.entries(statsData.stageDistribution).map(([stage, count]) => {
+                  const percentage = statsData.periodCount > 0 ? Math.round(((count as number) / (statsData.periodCount as number)) * 100) : 0;
+                  return (
+                    <div key={stage} className="flex items-center gap-4">
+                      <span className="text-sm font-medium text-slate-600 w-32 truncate">{stage}</span>
+                      <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full ${stageColors[stage] || 'bg-slate-400'} rounded-full transition-all duration-500`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-black text-slate-700 w-12 text-right">{count}</span>
                     </div>
-                    <span className="text-sm font-black text-slate-700 w-12 text-right">{count}</span>
-                  </div>
-                );
-              })}
-              {Object.keys(statsData.stageDistribution).length === 0 && (
-                <p className="text-center text-slate-400 py-4">Sem dados no período selecionado</p>
-              )}
+                  );
+                })}
+                {Object.keys(statsData.stageDistribution).length === 0 && (
+                  <p className="text-center text-slate-400 py-4">Sem dados no período selecionado</p>
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Type Distribution */}
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
-            <h3 className="text-lg font-black text-slate-800 mb-4">Top 5 Tipos de Pedido</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {statsData.typeDistribution.map(([type, count], index) => (
-                <div key={type} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm ${index === 0 ? 'bg-indigo-500' : index === 1 ? 'bg-purple-500' : index === 2 ? 'bg-blue-500' : 'bg-slate-400'
-                    }`}>
-                    {index + 1}
+            {/* Type Distribution */}
+            <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <h3 className="text-lg font-black text-slate-800 mb-4">Top 5 Tipos de Pedido</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {statsData.typeDistribution.map(([type, count], index) => (
+                  <div key={type} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm ${index === 0 ? 'bg-indigo-500' : index === 1 ? 'bg-purple-500' : index === 2 ? 'bg-blue-500' : 'bg-slate-400'
+                      }`}>
+                      {index + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-700 truncate">{toTitleCase(type)}</p>
+                      <p className="text-xs text-slate-400">{count} chamadas</p>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-700 truncate">{toTitleCase(type)}</p>
-                    <p className="text-xs text-slate-400">{count} chamadas</p>
-                  </div>
-                </div>
-              ))}
-              {statsData.typeDistribution.length === 0 && (
-                <p className="col-span-2 text-center text-slate-400 py-4">Sem dados</p>
-              )}
+                ))}
+                {statsData.typeDistribution.length === 0 && (
+                  <p className="col-span-2 text-center text-slate-400 py-4">Sem dados</p>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -424,11 +427,11 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
 
           {/* Recent Activity */}
           <div className="bg-white rounded-2xl border shadow-sm p-6">
-            <div className="flex items-center waves-effect justify-between mb-4">
+            <div className="flex items-center waves-effect justify-between mb-4 flex-wrap">
               <h3 className="text-lg font-black text-slate-800">Atividade Recente</h3>
               <button
                 onClick={() => setActiveTab('calls')}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-700 whitespace-nowrap"
               >
                 Ver Todos →
               </button>

@@ -170,34 +170,6 @@ io.on('connection', (socket) => {
             // Emit logic
             if (roomId === 'global') {
                 io.emit('newMessage', message);
-            } else if (roomId === 'ai') {
-                // Para a IA, primeiro emite a mensagem do usuário
-                socket.emit('newMessage', message);
-
-                // Emite um "typing" fictício da IA
-                socket.emit('userTyping', { userId: 'ai', userName: 'SROC AI Assistant', roomId: 'ai' });
-
-                // Resposta da IA com atraso
-                setTimeout(async () => {
-                    const aiContent = "Olá! O assistente SROC AI está em manutenção para melhorias. Por favor, utilize o chat geral para comunicações com a equipa.";
-                    const aiMsgId = uuidv4();
-                    const aiTs = new Date();
-
-                    await db.query(
-                        'INSERT INTO messages (id, sender_id, sender_name, content, room_id, timestamp) VALUES (?, ?, ?, ?, ?, ?)',
-                        [aiMsgId, 'ai', 'SROC AI Assistant', aiContent, 'ai', aiTs]
-                    );
-
-                    socket.emit('userStoppedTyping', { userId: 'ai', roomId: 'ai' });
-                    socket.emit('newMessage', {
-                        id: aiMsgId,
-                        senderId: 'ai',
-                        senderName: 'SROC AI Assistant',
-                        content: aiContent,
-                        roomId: 'ai',
-                        timestamp: aiTs.toISOString()
-                    });
-                }, 1500);
             } else if (roomId.includes('_')) {
                 // DM: Envia para os dois envolvidos
                 const participants = roomId.split('_');

@@ -158,8 +158,8 @@ const App: React.FC = () => {
           // Só contar como não lida se:
           // 1. Não fui eu que enviei
           // 2. Não está lida
-          // 3. Eu faço parte da sala (Global, AI ou DM participada)
-          const isParticipant = m.roomId === 'global' || m.roomId === 'ai' || (m.roomId.includes('_') && m.roomId.split('_').includes(String(currentUser.id)));
+          // 3. Eu faço parte da sala (Global ou DM participada)
+          const isParticipant = m.roomId === 'global' || (m.roomId.includes('_') && m.roomId.split('_').includes(String(currentUser.id)));
 
           if (String(m.senderId) !== String(currentUser.id) && !m.isRead && isParticipant) {
             counts[m.roomId] = (counts[m.roomId] || 0) + 1;

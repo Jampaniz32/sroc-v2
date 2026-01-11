@@ -41,6 +41,21 @@ const Chat: React.FC<ChatProps> = ({
     try { if (activeRoomId) onReadRoom(activeRoomId); } catch (e) { console.error(e); }
   }, [activeRoomId]);
 
+  // Limpar notificações ao voltar para a aba
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && activeRoomId) {
+        onReadRoom(activeRoomId);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleVisibilityChange);
+    };
+  }, [activeRoomId, onReadRoom]);
+
   useEffect(() => {
     const handleTyping = (data: { userId: string, userName: string, roomId: string }) => {
       setTypingUsers(prev => {

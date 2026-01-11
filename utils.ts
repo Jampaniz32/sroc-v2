@@ -225,9 +225,14 @@ export const sendPushNotification = (title: string, body: string) => {
   }
 };
 
-export const playNotificationSound = () => {
+export const playNotificationSound = (type: 'default' | 'whatsapp' = 'default') => {
   try {
-    const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    const sounds = {
+      default: 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3',
+      whatsapp: 'https://cdn.pixabay.com/audio/2022/10/16/audio_1070fc6591.mp3' // Som estilo "ping/pop" leve
+    };
+
+    const audio = new Audio(sounds[type]);
     audio.volume = 0.5;
     audio.play().catch(e => console.warn('Falha ao reproduzir áudio (interação necessária):', e));
   } catch (e) {

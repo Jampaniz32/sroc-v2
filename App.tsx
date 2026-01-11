@@ -177,7 +177,8 @@ const App: React.FC = () => {
       const isDocumentHidden = document.hidden;
 
       // Notificar sempre com som e toast se for mensagem de outro
-      playNotificationSound();
+      // Usar som do WhatsApp se estiver a ver o chat ativamente, caso contrário usa o som padrão
+      playNotificationSound(isViewing && !isDocumentHidden ? 'whatsapp' : 'default');
       showToast(`Mensagem de ${msg.senderName}`, 'info');
 
       if (!isViewing || isDocumentHidden) {

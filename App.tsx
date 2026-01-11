@@ -176,10 +176,12 @@ const App: React.FC = () => {
       const isViewing = activeTabRef.current === 'chat' && activeRoomRef.current === msg.roomId;
       const isDocumentHidden = document.hidden;
 
+      // Notificar sempre com som e toast se for mensagem de outro
+      playNotificationSound();
+      showToast(`Mensagem de ${msg.senderName}`, 'info');
+
       if (!isViewing || isDocumentHidden) {
         setUnreadCounts(prev => ({ ...prev, [msg.roomId]: (prev[msg.roomId] || 0) + 1 }));
-        showToast(`Mensagem de ${msg.senderName}`, 'info');
-        playNotificationSound();
         if (isDocumentHidden) {
           sendPushNotification(`Nova mensagem de ${msg.senderName}`, msg.content.substring(0, 100));
         }

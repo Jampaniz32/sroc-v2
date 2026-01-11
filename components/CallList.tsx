@@ -156,7 +156,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
         console.log('📋 Content-Disposition:', contentDisposition);
 
         const extension = selectedFormat === 'CSV' ? 'csv' : 'xlsx';
-        let filename = `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.${extension}`;
+        let filename = `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${new Date().toISOString().slice(0, 10)}.${extension}`;
 
         if (contentDisposition) {
           // Tentar vários padrões de extração
@@ -256,7 +256,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
           <div className="space-y-4">
             <p>Deseja processar a exportação de <strong>{filteredCalls.length}</strong> registos?</p>
 
-            {selectedFormat === 'XLS' && (
+            {['XLS', 'XLSX'].includes(selectedFormat || '') && (
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-3">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Modo de Exportação:</p>
 
@@ -396,7 +396,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
                 ) : (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" /></svg>
                 )}
-                <span>{isExporting ? 'A Exportar...' : `Exportar ${systemConfig.exportSettings.allowMultipleFormats ? '' : systemConfig.exportSettings.defaultFormat}`}</span>
+                <span>{isExporting ? 'A Exportar...' : `Exportar ${systemConfig.exportSettings.allowMultipleFormats ? '' : (systemConfig.exportSettings.defaultFormat || 'XLS')}`}</span>
                 {systemConfig.exportSettings.allowMultipleFormats && !isExporting && (
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                 )}

@@ -21,10 +21,13 @@ router.get('/', async (req, res) => {
             }
 
             // Sincronizar campos específicos
-            finalConfig.institutionName = config.institution_name || finalConfig.institutionName;
+            finalConfig.institutionName = config.institution_name || finalConfig.institutionName || 'SROC Operacional';
             finalConfig.logo = config.system_logo || finalConfig.logo;
             finalConfig.exportSettings = finalConfig.exportSettings || {};
             finalConfig.exportSettings.reportLogo = config.report_logo || finalConfig.exportSettings?.reportLogo;
+            finalConfig.exportSettings.defaultFormat = finalConfig.exportSettings.defaultFormat || 'XLS';
+            finalConfig.exportSettings.allowMultipleFormats = finalConfig.exportSettings.allowMultipleFormats ?? true;
+            finalConfig.exportSettings.selectedFields = finalConfig.exportSettings.selectedFields || ['nuit', 'cliente', 'entidade', 'agencia', 'tipoPedido', 'estagio', 'data', 'turno', 'contacto', 'agenteNome', 'whatsapp', 'observacoes'];
 
             res.json(finalConfig);
         } else {

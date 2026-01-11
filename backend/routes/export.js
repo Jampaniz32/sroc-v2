@@ -107,7 +107,7 @@ router.get('/', async (req, res) => {
             const lastDate = dates[dates.length - 1].toISOString().slice(0, 10);
 
             const fileDateRange = firstDate === lastDate ? firstDate : `${firstDate}_a_${lastDate}`;
-            const fileName = `RELATÓRIO DE CHAMADA - ${fileDateRange}.csv`;
+            const fileName = `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${fileDateRange}.csv`;
 
             res.setHeader('Content-Type', 'text/csv; charset=utf-8');
             res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
@@ -273,7 +273,7 @@ router.get('/', async (req, res) => {
         const fileDateRange = firstDateFile === lastDateFile ? firstDateFile : `${firstDateFile}_a_${lastDateFile}`;
         const modeSuffix = currentExportMode === 'segmented' ? '_Segmentado' : '';
 
-        const fileName = `RELATÓRIO DE CHAMADA - ${fileDateRange}${modeSuffix}.xlsx`;
+        const fileName = `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${fileDateRange}${modeSuffix}.xlsx`;
 
         // Headers
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');

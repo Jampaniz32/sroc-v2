@@ -156,7 +156,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
         console.log('📋 Content-Disposition:', contentDisposition);
 
         const extension = selectedFormat === 'CSV' ? 'csv' : 'xlsx';
-        let filename = `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${new Date().toISOString().slice(0, 10)}.${extension}`;
+        let filename = `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.${extension}`;
 
         if (contentDisposition) {
           // Tentar vários padrões de extração

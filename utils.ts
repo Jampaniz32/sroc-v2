@@ -300,7 +300,7 @@ const exportToExcel = async (data: CallRecord[], config: SystemConfig) => {
     const contentDisposition = response.headers.get('Content-Disposition');
     console.log('📋 Content-Disposition:', contentDisposition);
 
-    let filename = `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${new Date().toISOString().slice(0, 10)}.xlsx`;
+    let filename = `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.xlsx`;
 
     if (contentDisposition) {
       const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
@@ -343,7 +343,7 @@ const exportToCSV = (data: CallRecord[], config: SystemConfig) => {
   ].join('\n');
 
   const blob = new Blob(['\uFEFF', csvContent], { type: 'text/csv;charset=utf-8' });
-  saveAs(blob, `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${new Date().toISOString().slice(0, 10)}.csv`);
+  saveAs(blob, `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.csv`);
 };
 
 const exportToJSON = (data: CallRecord[], config: SystemConfig) => {
@@ -357,7 +357,7 @@ const exportToJSON = (data: CallRecord[], config: SystemConfig) => {
   }, null, 2);
 
   const blob = new Blob([json], { type: 'application/json' });
-  saveAs(blob, `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${new Date().toISOString().slice(0, 10)}.json`);
+  saveAs(blob, `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.json`);
 };
 
 const exportToXML = (data: CallRecord[], config: SystemConfig) => {
@@ -382,7 +382,7 @@ const exportToXML = (data: CallRecord[], config: SystemConfig) => {
   xml += `  </records>\n</sroc_report>`;
 
   const blob = new Blob([xml], { type: 'application/xml' });
-  saveAs(blob, `RELATÓRIO DE CHAMADA - Relatorio de chamada - ${new Date().toISOString().slice(0, 10)}.xml`);
+  saveAs(blob, `RELATÓRIO DE CHAMADA - ${new Date().toISOString().slice(0, 10)}.xml`);
 };
 
 const exportToPDF = (data: CallRecord[], config: SystemConfig) => {

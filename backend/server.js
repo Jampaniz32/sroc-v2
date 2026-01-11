@@ -52,6 +52,8 @@ const io = new Server(httpServer, {
     allowEIO3: true
 });
 
+app.set('io', io);
+
 // Middleware
 app.use(cors({
     origin: (origin, callback) => {

@@ -155,3 +155,19 @@ export const offUserStoppedTyping = (callback: (data: any) => void) => {
 export const offOfflineMessages = (callback: (data: any[]) => void) => {
     socket?.off('offlineMessages', callback);
 };
+
+export const onMessageUpdated = (callback: (data: any) => void) => {
+    socket?.on('messageUpdated', callback);
+};
+
+export const offMessageUpdated = (callback: (data: any) => void) => {
+    socket?.off('messageUpdated', callback);
+};
+
+export const onMessageDeleted = (callback: (data: any) => void) => {
+    socket?.on('messageDeleted', callback);
+};
+
+export const offMessageDeleted = (callback: (data: any) => void) => {
+    socket?.off('messageDeleted', callback);
+};

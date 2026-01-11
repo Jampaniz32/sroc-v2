@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, UserRole, CallRecord, Shift, SystemConfig, Toast, ChatMessage } from './types';
 import { getCurrentShift, requestNotificationPermission, sendPushNotification, playNotificationSound } from './utils';
 import { callsAPI, usersAPI, authAPI, messagesAPI, configAPI } from './services/api';
-import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, onOfflineMessages, offOfflineMessages, sendMessage as sendSocketMessage } from './services/socket';
+import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, onOfflineMessages, offOfflineMessages, onMessageUpdated, offMessageUpdated, onMessageDeleted, offMessageDeleted, sendMessage as sendSocketMessage } from './services/socket';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -201,11 +201,23 @@ const App: React.FC = () => {
       });
     };
 
+    const handleMessageUpdated = (data: { id: string, content: string }) => {
+      setMessages(prev => prev.map(m => m.id === data.id ? { ...m, content: data.content } : m));
+    };
+
+    const handleMessageDeleted = (data: { id: string }) => {
+      setMessages(prev => prev.filter(m => m.id !== data.id));
+    };
+
     onOfflineMessages(handleOfflineMessages);
+    onMessageUpdated(handleMessageUpdated);
+    onMessageDeleted(handleMessageDeleted);
 
     return () => {
       offNewMessage(handleNewMessage);
       offOfflineMessages(handleOfflineMessages);
+      offMessageUpdated(handleMessageUpdated);
+      offMessageDeleted(handleMessageDeleted);
       socket?.off('error');
       disconnectSocket();
     };
@@ -391,6 +403,12 @@ const App: React.FC = () => {
                 if (currentUser) {
                   messagesAPI.markAsRead(id).catch(err => console.error('Erro marking as read:', err));
                 }
+              }}
+              onUpdateMessage={async (id, content) => {
+                await messagesAPI.update(id, content);
+              }}
+              onDeleteMessage={async (id) => {
+                await messagesAPI.delete(id);
               }}
             />
           }

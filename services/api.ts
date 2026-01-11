@@ -140,6 +140,16 @@ export const messagesAPI = {
         const response = await api.post(`/messages/read/${roomId}`);
         return response.data;
     },
+
+    update: async (id: string, content: string) => {
+        const response = await api.put(`/messages/${id}`, { content });
+        return response.data;
+    },
+
+    delete: async (id: string) => {
+        const response = await api.delete(`/messages/${id}`);
+        return response.data;
+    },
 };
 
 // Config API

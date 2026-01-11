@@ -73,10 +73,6 @@ router.post('/read/:roomId', async (req, res) => {
         const { roomId } = req.params;
         const userId = req.user.id;
 
-        // Apenas marca como lido se o utilizador for o destinatário (não o remetente)
-        // No caso de DM, o remetente é um ID e o outro é outro.
-        // Se a mensagem for na sala global, 'is_read' é mais complexo, 
-        // mas por agora focamos em DMs.
         await db.query(
             'UPDATE messages SET is_read = 1 WHERE room_id = ? AND sender_id != ?',
             [roomId, userId]
@@ -86,6 +82,78 @@ router.post('/read/:roomId', async (req, res) => {
     } catch (error) {
         console.error('Mark as read error:', error);
         res.status(500).json({ error: 'Erro ao marcar mensagens como lidas' });
+    }
+});
+
+// Editar mensagem
+router.put('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { content } = req.body;
+        const userId = String(req.user.id);
+        const userRole = req.user.role?.toUpperCase();
+
+        // Verificar se a mensagem existe e se o utilizador tem permissão
+        const [rows] = await db.query('SELECT sender_id, room_id FROM messages WHERE id = ?', [id]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Mensagem não encontrada' });
+
+        const message = rows[0];
+        if (String(message.sender_id) !== userId && userRole !== 'ADMIN') {
+            return res.status(403).json({ error: 'Sem permissão para editar esta mensagem' });
+        }
+
+        await db.query('UPDATE messages SET content = ? WHERE id = ?', [content, id]);
+
+        // Notificar via Socket.io
+        const io = req.app.get('io');
+        if (message.room_id === 'global') {
+            io.emit('messageUpdated', { id, content, roomId: message.room_id });
+        } else {
+            const participants = message.room_id.split('_');
+            participants.forEach(pId => {
+                io.to(`user_${pId}`).emit('messageUpdated', { id, content, roomId: message.room_id });
+            });
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Edit message error:', error);
+        res.status(500).json({ error: 'Erro ao editar mensagem' });
+    }
+});
+
+// Eliminar mensagem
+router.delete('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = String(req.user.id);
+        const userRole = req.user.role?.toUpperCase();
+
+        const [rows] = await db.query('SELECT sender_id, room_id FROM messages WHERE id = ?', [id]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Mensagem não encontrada' });
+
+        const message = rows[0];
+        if (String(message.sender_id) !== userId && userRole !== 'ADMIN') {
+            return res.status(403).json({ error: 'Sem permissão para eliminar esta mensagem' });
+        }
+
+        await db.query('DELETE FROM messages WHERE id = ?', [id]);
+
+        // Notificar via Socket.io
+        const io = req.app.get('io');
+        if (message.room_id === 'global') {
+            io.emit('messageDeleted', { id, roomId: message.room_id });
+        } else {
+            const participants = message.room_id.split('_');
+            participants.forEach(pId => {
+                io.to(`user_${pId}`).emit('messageDeleted', { id, roomId: message.room_id });
+            });
+        }
+
+        res.json({ success: true });
+    } catch (error) {
+        console.error('Delete message error:', error);
+        res.status(500).json({ error: 'Erro ao eliminar mensagem' });
     }
 });
 

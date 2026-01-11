@@ -13,6 +13,7 @@ interface ChatProps {
   onReadRoom: (id: string) => void;
   onUpdateMessage: (id: string, content: string) => Promise<void>;
   onDeleteMessage: (id: string) => Promise<void>;
+  onClearChat: (roomId: string) => Promise<void>;
 }
 
 const Chat: React.FC<ChatProps> = ({
@@ -25,7 +26,8 @@ const Chat: React.FC<ChatProps> = ({
   unreadCounts = {},
   onReadRoom,
   onUpdateMessage,
-  onDeleteMessage
+  onDeleteMessage,
+  onClearChat
 }) => {
   const [inputValue, setInputValue] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -213,6 +215,16 @@ const Chat: React.FC<ChatProps> = ({
     }
   };
 
+  const handleClearChat = async () => {
+    if (window.confirm(`Deseja realmente eliminar TODO o histórico de "${activeRoom?.name}"? Esta ação não pode ser desfeita.`)) {
+      try {
+        await onClearChat(activeRoomId);
+      } catch (e) {
+        console.error('Erro ao limpar chat:', e);
+      }
+    }
+  };
+
   return (
     <div className="flex h-[calc(100vh-180px)] bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
 
@@ -283,11 +295,24 @@ const Chat: React.FC<ChatProps> = ({
           </div>
         )}
 
-        <header className="px-8 py-5 border-b border-slate-50 flex items-center bg-white shadow-sm z-10">
-          <div className="text-indigo-600 mr-4">
-            {activeRoom?.icon}
+        <header className="px-8 py-5 border-b border-slate-50 flex items-center justify-between bg-white shadow-sm z-10">
+          <div className="flex items-center">
+            <div className="text-indigo-600 mr-4">
+              {activeRoom?.icon}
+            </div>
+            <h4 className="font-black text-slate-800">{activeRoom?.name || 'Selecione uma sala'}</h4>
           </div>
-          <h4 className="font-black text-slate-800">{activeRoom?.name || 'Selecione uma sala'}</h4>
+
+          {(currentUser.role === 'ADMIN' || activeRoomId.includes('_')) && (
+            <button
+              onClick={handleClearChat}
+              className="group flex items-center space-x-2 px-3 py-1.5 rounded-xl border border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest shadow-sm"
+              title="Eliminar todo o histórico"
+            >
+              <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+              <span>Limpar Conversa</span>
+            </button>
+          )}
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto p-8 space-y-6 bg-slate-50/10">

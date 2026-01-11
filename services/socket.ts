@@ -171,3 +171,11 @@ export const onMessageDeleted = (callback: (data: any) => void) => {
 export const offMessageDeleted = (callback: (data: any) => void) => {
     socket?.off('messageDeleted', callback);
 };
+
+export const onChatCleared = (callback: (data: { roomId: string }) => void) => {
+    socket?.on('chatCleared', callback);
+};
+
+export const offChatCleared = (callback: (data: { roomId: string }) => void) => {
+    socket?.off('chatCleared', callback);
+};

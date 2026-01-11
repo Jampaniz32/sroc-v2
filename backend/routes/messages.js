@@ -157,4 +157,43 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// Eliminar histórico completo de uma sala
+router.delete('/room/:roomId', async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const userId = String(req.user.id);
+        const userRole = req.user.role?.toUpperCase();
+
+        // Verificação de permissão
+        if (roomId === 'global' && userRole !== 'ADMIN') {
+            return res.status(403).json({ error: 'Apenas administradores podem limpar a sala geral' });
+        }
+
+        if (roomId.includes('_')) {
+            const participants = roomId.split('_');
+            if (!participants.includes(userId) && userRole !== 'ADMIN') {
+                return res.status(403).json({ error: 'Sem permissão para limpar esta conversa privada' });
+            }
+        }
+
+        await db.query('DELETE FROM messages WHERE room_id = ?', [roomId]);
+
+        // Notificar via Socket.io
+        const io = req.app.get('io');
+        if (roomId === 'global') {
+            io.emit('chatCleared', { roomId });
+        } else {
+            const participants = roomId.split('_');
+            participants.forEach(pId => {
+                io.to(`user_${pId}`).emit('chatCleared', { roomId });
+            });
+        }
+
+        res.json({ success: true, message: 'Histórico eliminado com sucesso' });
+    } catch (error) {
+        console.error('Clear room error:', error);
+        res.status(500).json({ error: 'Erro ao eliminar histórico da sala' });
+    }
+});
+
 export default router;

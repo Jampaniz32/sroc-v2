@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { User, UserRole, CallRecord, Shift, SystemConfig, Toast, ChatMessage } from './types';
 import { getCurrentShift, requestNotificationPermission, sendPushNotification, playNotificationSound } from './utils';
 import { callsAPI, usersAPI, authAPI, messagesAPI, configAPI } from './services/api';
-import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, onOfflineMessages, offOfflineMessages, onMessageUpdated, offMessageUpdated, onMessageDeleted, offMessageDeleted, sendMessage as sendSocketMessage } from './services/socket';
+import { initializeSocket, disconnectSocket, onNewMessage, offNewMessage, onOfflineMessages, offOfflineMessages, onMessageUpdated, offMessageUpdated, onMessageDeleted, offMessageDeleted, onChatCleared, offChatCleared, sendMessage as sendSocketMessage } from './services/socket';
 import Login from './components/Login';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -209,15 +209,22 @@ const App: React.FC = () => {
       setMessages(prev => prev.filter(m => m.id !== data.id));
     };
 
+    const handleChatCleared = (data: { roomId: string }) => {
+      setMessages(prev => prev.filter(m => m.roomId !== data.roomId));
+      setUnreadCounts(prev => ({ ...prev, [data.roomId]: 0 }));
+    };
+
     onOfflineMessages(handleOfflineMessages);
     onMessageUpdated(handleMessageUpdated);
     onMessageDeleted(handleMessageDeleted);
+    onChatCleared(handleChatCleared);
 
     return () => {
       offNewMessage(handleNewMessage);
       offOfflineMessages(handleOfflineMessages);
       offMessageUpdated(handleMessageUpdated);
       offMessageDeleted(handleMessageDeleted);
+      offChatCleared(handleChatCleared);
       socket?.off('error');
       disconnectSocket();
     };
@@ -409,6 +416,9 @@ const App: React.FC = () => {
               }}
               onDeleteMessage={async (id) => {
                 await messagesAPI.delete(id);
+              }}
+              onClearChat={async (roomId) => {
+                await messagesAPI.clearByRoom(roomId);
               }}
             />
           }

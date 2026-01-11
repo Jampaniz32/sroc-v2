@@ -150,6 +150,11 @@ export const messagesAPI = {
         const response = await api.delete(`/messages/${id}`);
         return response.data;
     },
+
+    clearByRoom: async (roomId: string) => {
+        const response = await api.delete(`/messages/room/${roomId}`);
+        return response.data;
+    },
 };
 
 // Config API

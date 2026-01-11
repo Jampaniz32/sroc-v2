@@ -304,60 +304,98 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
 
       {/* MAIN CONTENT GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column - Charts */}
+        {/* Left Column - Charts & Main Lists */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Type Distribution and Stage Distribution */}
-          <div className="space-y-6">
-            {/* Stage Distribution */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
-              <h3 className="text-lg font-black text-slate-800 mb-4">Distribuição por Estado</h3>
-              <div className="space-y-3">
-                {Object.entries(statsData.stageDistribution).map(([stage, count]) => {
-                  const percentage = statsData.periodCount > 0 ? Math.round(((count as number) / (statsData.periodCount as number)) * 100) : 0;
-                  return (
-                    <div key={stage} className="flex items-center gap-4">
-                      <span className="text-sm font-medium text-slate-600 w-32 truncate">{stage}</span>
-                      <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full ${stageColors[stage] || 'bg-slate-400'} rounded-full transition-all duration-500`}
-                          style={{ width: `${percentage}%` }}
-                        />
-                      </div>
-                      <span className="text-sm font-black text-slate-700 w-12 text-right">{count}</span>
+          {/* Stage Distribution */}
+          <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <h3 className="text-lg font-black text-slate-800 mb-4">Distribuição por Estado</h3>
+            <div className="space-y-3">
+              {Object.entries(statsData.stageDistribution).map(([stage, count]) => {
+                const percentage = statsData.periodCount > 0 ? Math.round(((count as number) / (statsData.periodCount as number)) * 100) : 0;
+                return (
+                  <div key={stage} className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-slate-600 w-32 truncate">{stage}</span>
+                    <div className="flex-1 h-3 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${stageColors[stage] || 'bg-slate-400'} rounded-full transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
                     </div>
-                  );
-                })}
-                {Object.keys(statsData.stageDistribution).length === 0 && (
-                  <p className="text-center text-slate-400 py-4">Sem dados no período selecionado</p>
-                )}
-              </div>
+                    <span className="text-sm font-black text-slate-700 w-12 text-right">{count}</span>
+                  </div>
+                );
+              })}
+              {Object.keys(statsData.stageDistribution).length === 0 && (
+                <p className="text-center text-slate-400 py-4">Sem dados no período selecionado</p>
+              )}
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Type Distribution */}
             <div className="bg-white rounded-2xl border shadow-sm p-6">
               <h3 className="text-lg font-black text-slate-800 mb-4">Top 5 Tipos de Pedido</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-3">
                 {statsData.typeDistribution.map(([type, count], index) => (
                   <div key={type} className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl">
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm ${index === 0 ? 'bg-indigo-500' : index === 1 ? 'bg-purple-500' : index === 2 ? 'bg-blue-500' : 'bg-slate-400'
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm shrink-0 ${index === 0 ? 'bg-indigo-500' : index === 1 ? 'bg-purple-500' : index === 2 ? 'bg-blue-500' : 'bg-slate-400'
                       }`}>
                       {index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-slate-700 truncate">{toTitleCase(type)}</p>
-                      <p className="text-xs text-slate-400">{count} chamadas</p>
+                      <p className="text-xs font-bold text-slate-700 truncate">{toTitleCase(type)}</p>
+                      <p className="text-[10px] text-slate-400">{count} chamadas</p>
                     </div>
                   </div>
                 ))}
                 {statsData.typeDistribution.length === 0 && (
-                  <p className="col-span-2 text-center text-slate-400 py-4">Sem dados</p>
+                  <p className="text-center text-slate-400 py-4 text-xs font-bold uppercase">Sem dados</p>
+                )}
+              </div>
+            </div>
+
+            {/* Recent Activity */}
+            <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-black text-slate-800">Atividade Recente</h3>
+                <button
+                  onClick={() => setActiveTab('calls')}
+                  className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+                >
+                  Ver Todos →
+                </button>
+              </div>
+              <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar">
+                {statsData.recent.map(call => (
+                  <div key={call.id} className="p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-bold text-slate-800 truncate text-xs">{formatName(call.cliente)}</p>
+                        <p className="text-[10px] text-slate-500 truncate">
+                          {toTitleCase(call.tipoPedido === 'Outro' ? call.outroTipoPedido : call.tipoPedido)}
+                        </p>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase shrink-0 ${call.estagio === 'Resolvido' ? 'bg-emerald-100 text-emerald-600'
+                        : call.estagio === 'Pendente' ? 'bg-orange-100 text-orange-600'
+                          : 'bg-amber-100 text-amber-600'
+                        }`}>
+                        {call.estagio}
+                      </span>
+                    </div>
+                    <p className="text-[9px] text-slate-400 mt-1">
+                      {new Date(call.data).toLocaleDateString('pt-PT')} • {new Date(call.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                ))}
+                {statsData.recent.length === 0 && (
+                  <p className="text-center text-slate-400 py-8 text-xs font-bold uppercase">Sem registos</p>
                 )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column */}
+        {/* Right Column - Sidebar Statistics */}
         <div className="space-y-6">
           {/* Agent Ranking (Admin only) */}
           {isAdmin && (
@@ -366,19 +404,19 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
               <div className="space-y-3">
                 {statsData.agentRanking.map(([name, data]: any, index) => (
                   <div key={name} className="flex items-center gap-3">
-                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-xs ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-300'
+                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 ${index === 0 ? 'bg-yellow-500 shadow-md shadow-yellow-200' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-300'
                       }`}>
                       {index + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-bold text-slate-700 truncate">{name}</p>
-                      <p className="text-xs text-slate-400">{data.resolved}/{data.count} resolvidos</p>
+                      <p className="text-[10px] text-slate-400 font-black uppercase tracking-tighter">{data.resolved}/{data.count} resolvidos</p>
                     </div>
                     <span className="text-lg font-black text-indigo-600">{data.count}</span>
                   </div>
                 ))}
                 {statsData.agentRanking.length === 0 && (
-                  <p className="text-center text-slate-400 py-4">Sem dados</p>
+                  <p className="text-center text-slate-400 py-4 text-xs font-bold uppercase">Sem dados</p>
                 )}
               </div>
             </div>
@@ -424,45 +462,6 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
               </div>
             </div>
           )}
-
-          {/* Recent Activity */}
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
-            <div className="flex items-center waves-effect justify-between mb-4 flex-wrap">
-              <h3 className="text-lg font-black text-slate-800">Atividade Recente</h3>
-              <button
-                onClick={() => setActiveTab('calls')}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-700 whitespace-nowrap"
-              >
-                Ver Todos →
-              </button>
-            </div>
-            <div className="space-y-3 max-h-80 overflow-y-auto">
-              {statsData.recent.map(call => (
-                <div key={call.id} className="p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                  <div className="flex justify-between items-start">
-                    <div className="min-w-0 flex-1">
-                      <p className="font-bold text-slate-800 truncate">{formatName(call.cliente)}</p>
-                      <p className="text-xs text-slate-500 truncate">
-                        {toTitleCase(call.tipoPedido === 'Outro' ? call.outroTipoPedido : call.tipoPedido)}
-                      </p>
-                    </div>
-                    <span className={`px-2 py-1 rounded text-[9px] font-black uppercase ml-2 ${call.estagio === 'Resolvido' ? 'bg-emerald-100 text-emerald-600'
-                      : call.estagio === 'Pendente' ? 'bg-orange-100 text-orange-600'
-                        : 'bg-amber-100 text-amber-600'
-                      }`}>
-                      {call.estagio}
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-1">
-                    {new Date(call.data).toLocaleDateString('pt-PT')} • {new Date(call.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                </div>
-              ))}
-              {statsData.recent.length === 0 && (
-                <p className="text-center text-slate-400 py-8">Sem registos recentes.</p>
-              )}
-            </div>
-          </div>
         </div>
       </div>
     </div>

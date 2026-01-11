@@ -135,7 +135,19 @@ const App: React.FC = () => {
     }
 
     messagesAPI.getAll()
-      .then(data => setMessages(data))
+      .then(data => {
+        setMessages(data);
+
+        // Calcular contagem inicial de não lidas
+        const counts: Record<string, number> = {};
+        data.forEach((m: any) => {
+          // Se sou o destinatário e a mensagem não foi lida
+          if (String(m.senderId) !== String(currentUser.id) && !m.isRead) {
+            counts[m.roomId] = (counts[m.roomId] || 0) + 1;
+          }
+        });
+        setUnreadCounts(counts);
+      })
       .catch(err => console.error('Erro loading messages:', err));
 
     const handleNewMessage = (msg: ChatMessage) => {

@@ -197,19 +197,24 @@ const Chat: React.FC<ChatProps> = ({
             <button
               key={room.id}
               onClick={() => setActiveRoomId(room.id)}
-              className={`w-full flex items-center space-x-3 p-3 rounded-2xl transition-all relative ${activeRoomId === room.id
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+              className={`w-full flex items-center space-x-3 p-3 rounded-2xl transition-all relative border-2 ${activeRoomId === room.id
+                ? 'bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-600/20'
                 : (unreadCounts[room.id] || 0) > 0
-                  ? 'bg-emerald-50 text-slate-600 border border-emerald-100'
-                  : 'hover:bg-white border border-transparent hover:border-slate-100 text-slate-600'
+                  ? 'bg-emerald-50 border-emerald-500 text-emerald-900 shadow-sm ring-1 ring-emerald-500/20'
+                  : 'bg-transparent border-transparent hover:bg-white hover:border-slate-100 text-slate-600'
                 }`}
             >
-              <div className={`${activeRoomId === room.id ? 'text-white' : 'text-indigo-600'}`}>
+              <div className={`${activeRoomId === room.id ? 'text-white' : (unreadCounts[room.id] || 0) > 0 ? 'text-emerald-600' : 'text-indigo-600'}`}>
                 {room.icon}
               </div>
               <div className="text-left overflow-hidden flex-1">
-                <p className={`font-black text-[11px] truncate ${activeRoomId === room.id ? 'text-white' : 'text-slate-800'}`}>{room.name}</p>
-                <p className={`text-[8px] font-bold uppercase tracking-widest ${activeRoomId === room.id ? 'text-indigo-200' : 'text-slate-400'}`}>{room.type}</p>
+                <div className="flex items-center space-x-2">
+                  <p className={`font-black text-[11px] truncate ${activeRoomId === room.id ? 'text-white' : 'text-slate-800'}`}>{room.name}</p>
+                  {(unreadCounts[room.id] || 0) > 0 && activeRoomId !== room.id && (
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                  )}
+                </div>
+                <p className={`text-[8px] font-bold uppercase tracking-widest ${activeRoomId === room.id ? 'text-indigo-200' : (unreadCounts[room.id] || 0) > 0 ? 'text-emerald-600' : 'text-slate-400'}`}>{room.type}</p>
               </div>
 
               {(unreadCounts[room.id] || 0) > 0 && activeRoomId !== room.id && (

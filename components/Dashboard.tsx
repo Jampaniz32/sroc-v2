@@ -272,13 +272,14 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
                 </div>
               </div>
             )}
+            {/* Button Moved Inside */}
+            <button
+              onClick={() => setActiveTab('new-call')}
+              className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-xl font-black hover:scale-105 transition-transform flex items-center gap-2 shadow-lg shadow-indigo-500/25"
+            >
+              <span className="text-lg">+</span> NOVO REGISTO
+            </button>
           </div>
-          <button
-            onClick={() => setActiveTab('new-call')}
-            className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-xl font-black hover:scale-105 transition-transform flex items-center gap-2 shadow-lg shadow-indigo-500/25"
-          >
-            <span className="text-lg">+</span> NOVO REGISTO
-          </button>
         </div>
       </div>
 

@@ -242,10 +242,7 @@ const Login: React.FC<LoginProps> = ({ onLogin, config }) => {
             <p className="text-[10px] text-white/30 font-medium uppercase tracking-wider">
               Conexão Segura e Encriptada
             </p>
-            <div className="flex items-center justify-center space-x-2 mt-2">
-              <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
-              <span className="text-[9px] text-emerald-400/80 font-bold uppercase tracking-wider">Sistema Protegido</span>
-            </div>
+
           </div>
         </div>
 

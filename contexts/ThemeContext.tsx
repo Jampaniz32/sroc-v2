@@ -13,7 +13,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [theme, setTheme] = useState<Theme>(() => {
         // Verificar preferência salva no localStorage
-        const savedTheme = localStorage.getItem('sroc_theme') as Theme;
+        const savedTheme = localStorage.getItem('sroc_theme_v2') as Theme;
         if (savedTheme === 'light' || savedTheme === 'dark') {
             return savedTheme;
         }
@@ -27,12 +27,14 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
         if (theme === 'dark') {
             root.classList.add('dark');
+            root.style.colorScheme = 'dark';
         } else {
             root.classList.remove('dark');
+            root.style.colorScheme = 'light';
         }
 
         // Persistir no localStorage
-        localStorage.setItem('sroc_theme', theme);
+        localStorage.setItem('sroc_theme_v2', theme);
     }, [theme]);
 
     const toggleTheme = () => {

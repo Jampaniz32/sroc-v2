@@ -438,8 +438,8 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
                 {(showAllRecords ? filteredCalls : filteredCalls.slice(0, RECORDS_LIMIT)).map(call => (
                   <tr key={call.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-all group">
                     <td className="px-6 py-5">
-                      <p className="font-bold text-slate-800 text-xs">{call.data ? formatDate(call.data).split(',')[0] : '--'}</p>
-                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">{(call.turno || '').split(' ')[0]}</p>
+                      <p className="font-bold text-slate-800 dark:text-slate-200 text-xs">{call.data ? formatDate(call.data).split(',')[0] : '--'}</p>
+                      <p className="text-[9px] text-slate-400 dark:text-slate-400 font-black uppercase tracking-tighter">{(call.turno || '').split(' ')[0]}</p>
                     </td>
                     <td className="px-6 py-5">
                       <p className="font-black text-slate-800 dark:text-slate-100 tracking-tight text-xs group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{formatName(call.cliente) || 'Sem Cliente'}</p>

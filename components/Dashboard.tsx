@@ -241,20 +241,35 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
 
             {/* Custom Date Inputs */}
             {selectedPeriod === 'custom' && (
-              <div className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300">
-                <input
-                  type="date"
-                  value={customRange.start}
-                  onChange={(e) => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
-                  className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                />
-                <span className="text-slate-400 font-bold">-</span>
-                <input
-                  type="date"
-                  value={customRange.end}
-                  onChange={(e) => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
-                  className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-800 border border-slate-700 text-white focus:ring-2 focus:ring-indigo-500 outline-none"
-                />
+              <div className="flex items-center gap-3 bg-slate-800/80 border border-slate-700/50 p-1.5 rounded-xl animate-in slide-in-from-right-10 duration-500 backdrop-blur-sm shadow-xl">
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none z-10">
+                    <span className="text-[9px] text-indigo-400 font-black uppercase tracking-widest">DE</span>
+                  </div>
+                  <input
+                    type="date"
+                    value={customRange.start}
+                    onChange={(e) => setCustomRange(prev => ({ ...prev, start: e.target.value }))}
+                    className="pl-9 pr-2 py-2 w-32 rounded-lg text-[11px] font-bold bg-slate-900/50 border border-slate-700 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all hover:bg-slate-900/80 cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
+                  />
+                </div>
+                <span className="text-slate-500 font-bold">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                  </svg>
+                </span>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-2.5 flex items-center pointer-events-none z-10">
+                    <span className="text-[9px] text-indigo-400 font-black uppercase tracking-widest">ATÉ</span>
+                  </div>
+                  <input
+                    type="date"
+                    value={customRange.end}
+                    min={customRange.start}
+                    onChange={(e) => setCustomRange(prev => ({ ...prev, end: e.target.value }))}
+                    className="pl-10 pr-2 py-2 w-32 rounded-lg text-[11px] font-bold bg-slate-900/50 border border-slate-700 text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all hover:bg-slate-900/80 cursor-pointer [&::-webkit-calendar-picker-indicator]:filter [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:opacity-50 hover:[&::-webkit-calendar-picker-indicator]:opacity-100"
+                  />
+                </div>
               </div>
             )}
           </div>

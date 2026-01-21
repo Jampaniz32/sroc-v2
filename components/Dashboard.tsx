@@ -266,234 +266,233 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
           </button>
         </div>
       </div>
-    </div>
 
-      {/* QUICK STATS */ }
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase">Período</p>
-          <p className="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1">{statsData.periodCount}</p>
-        </div>
-        <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M2 3a1 1 0 011-1h14a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" />
-          </svg>
-        </div>
-      </div>
-      <div className="mt-3">
-        <MiniBarChart data={statsData.dailyTrend} color="bg-indigo-400" />
-      </div>
-    </div>
-
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-xs font-black text-slate-400 uppercase">Resolvidos</p>
-          <p className="text-3xl font-black text-emerald-600 mt-1">{statsData.resolved}</p>
-        </div>
-        <div className="relative flex items-center justify-center">
-          <ProgressRing progress={statsData.resolutionRate} size={48} color="stroke-emerald-500" />
-          <span className="absolute text-[10px] font-black text-emerald-600">{statsData.resolutionRate}%</span>
-        </div>
-      </div>
-      <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">Taxa de resolução</p>
-    </div>
-
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase">Pendentes</p>
-          <p className="text-3xl font-black text-amber-600 dark:text-amber-500 mt-1">{statsData.pending}</p>
-        </div>
-        <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-          </svg>
-        </div>
-      </div>
-      <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">Aguardando resolução</p>
-    </div>
-
-    <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start">
-        <div>
-          <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase">WhatsApp</p>
-          <p className="text-3xl font-black text-green-600 dark:text-green-500 mt-1">{statsData.whatsappCount}</p>
-        </div>
-        <div className="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
-          </svg>
-        </div>
-      </div>
-      <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">Via canal digital</p>
-    </div>
-  </div>
-
-  {/* MAIN CONTENT GRID */ }
-  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    {/* Left Column - Charts & Main Lists */}
-    <div className="lg:col-span-2 space-y-6">
-      {/* Stage Distribution */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-        <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4">Distribuição por Estado</h3>
-        <div className="space-y-3">
-          {Object.entries(statsData.stageDistribution).map(([stage, count]) => {
-            const percentage = statsData.periodCount > 0 ? Math.round(((count as number) / (statsData.periodCount as number)) * 100) : 0;
-            return (
-              <div key={stage} className="flex items-center gap-4">
-                <span className="text-sm font-medium text-slate-600 dark:text-slate-300 w-32 truncate">{stage}</span>
-                <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${stageColors[stage] || 'bg-slate-400'} rounded-full transition-all duration-500`}
-                    style={{ width: `${percentage}%` }}
-                  />
-                </div>
-                <span className="text-sm font-black text-slate-700 dark:text-slate-300 w-12 text-right">{count}</span>
-              </div>
-            );
-          })}
-          {Object.keys(statsData.stageDistribution).length === 0 && (
-            <p className="text-center text-slate-400 dark:text-slate-500 py-4">Sem dados no período selecionado</p>
-          )}
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Type Distribution */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-          <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4">Top 5 Tipos de Pedido</h3>
-          <div className="space-y-3">
-            {statsData.typeDistribution.map(([type, count], index) => (
-              <div key={type} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm shrink-0 ${index === 0 ? 'bg-indigo-500' : index === 1 ? 'bg-purple-500' : index === 2 ? 'bg-blue-500' : 'bg-slate-400'
-                  }`}>
-                  {index + 1}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{toTitleCase(type)}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500">{count} chamadas</p>
-                </div>
-              </div>
-            ))}
-            {statsData.typeDistribution.length === 0 && (
-              <p className="text-center text-slate-400 dark:text-slate-500 py-4 text-xs font-bold uppercase">Sem dados</p>
-            )}
+      {/* QUICK STATS */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase">Período</p>
+              <p className="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1">{statsData.periodCount}</p>
+            </div>
+            <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-900/50 rounded-xl flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M2 3a1 1 0 011-1h14a1 1 0 011 1v12a1 1 0 01-1 1H3a1 1 0 01-1-1V3z" />
+              </svg>
+            </div>
+          </div>
+          <div className="mt-3">
+            <MiniBarChart data={statsData.dailyTrend} color="bg-indigo-400" />
           </div>
         </div>
 
-        {/* Agent Ranking (Admin only) - Now in main grid */}
-        {isAdmin && (
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-black text-slate-400 uppercase">Resolvidos</p>
+              <p className="text-3xl font-black text-emerald-600 mt-1">{statsData.resolved}</p>
+            </div>
+            <div className="relative flex items-center justify-center">
+              <ProgressRing progress={statsData.resolutionRate} size={48} color="stroke-emerald-500" />
+              <span className="absolute text-[10px] font-black text-emerald-600">{statsData.resolutionRate}%</span>
+            </div>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">Taxa de resolução</p>
+        </div>
+
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase">Pendentes</p>
+              <p className="text-3xl font-black text-amber-600 dark:text-amber-500 mt-1">{statsData.pending}</p>
+            </div>
+            <div className="w-10 h-10 bg-amber-100 dark:bg-amber-900/50 rounded-xl flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">Aguardando resolução</p>
+        </div>
+
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase">WhatsApp</p>
+              <p className="text-3xl font-black text-green-600 dark:text-green-500 mt-1">{statsData.whatsappCount}</p>
+            </div>
+            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/50 rounded-xl flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-3">Via canal digital</p>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Charts & Main Lists */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Stage Distribution */}
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4">Ranking de Agentes</h3>
+            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4">Distribuição por Estado</h3>
             <div className="space-y-3">
-              {statsData.agentRanking.map(([name, data]: any, index) => (
-                <div key={name} className="flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 ${index === 0 ? 'bg-yellow-500 shadow-md shadow-yellow-200' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-300'
-                    }`}>
-                    {index + 1}
+              {Object.entries(statsData.stageDistribution).map(([stage, count]) => {
+                const percentage = statsData.periodCount > 0 ? Math.round(((count as number) / (statsData.periodCount as number)) * 100) : 0;
+                return (
+                  <div key={stage} className="flex items-center gap-4">
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-300 w-32 truncate">{stage}</span>
+                    <div className="flex-1 h-3 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full ${stageColors[stage] || 'bg-slate-400'} rounded-full transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-black text-slate-700 dark:text-slate-300 w-12 text-right">{count}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{name}</p>
-                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-tighter">{data.resolved}/{data.count} resolvidos</p>
-                  </div>
-                  <span className="text-lg font-black text-indigo-600">{data.count}</span>
-                </div>
-              ))}
-              {statsData.agentRanking.length === 0 && (
-                <p className="text-center text-slate-400 dark:text-slate-500 py-4 text-xs font-bold uppercase">Sem dados</p>
+                );
+              })}
+              {Object.keys(statsData.stageDistribution).length === 0 && (
+                <p className="text-center text-slate-400 dark:text-slate-500 py-4">Sem dados no período selecionado</p>
               )}
             </div>
           </div>
-        )}
-      </div>
-    </div>
 
-    {/* Right Column - Sidebar Statistics */}
-    <div className="space-y-6">
-      {/* Recent Activity - Now in sidebar */}
-      <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Atividade Recente</h3>
-          <button
-            onClick={() => setActiveTab('calls')}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
-          >
-            Ver Todos →
-          </button>
-        </div>
-        <div className="space-y-3 max-h-[340px] overflow-y-auto custom-scrollbar">
-          {statsData.recent.map(call => (
-            <div key={call.id} className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-              <div className="flex justify-between items-start gap-2">
-                <div className="min-w-0 flex-1">
-                  <p className="font-bold text-slate-800 dark:text-slate-100 truncate text-xs">{formatName(call.cliente)}</p>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
-                    {toTitleCase(call.tipoPedido === 'Outro' ? call.outroTipoPedido : call.tipoPedido)}
-                  </p>
-                </div>
-                <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase shrink-0 ${call.estagio === 'Resolvido' ? 'bg-emerald-100 text-emerald-600'
-                  : call.estagio === 'Pendente' ? 'bg-orange-100 text-orange-600'
-                    : 'bg-amber-100 text-amber-600'
-                  }`}>
-                  {call.estagio}
-                </span>
-              </div>
-              <p className="text-[9px] text-slate-400 dark:text-slate-500 mt-1">
-                {new Date(call.data).toLocaleDateString('pt-PT')} • {new Date(call.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
-              </p>
-            </div>
-          ))}
-          {statsData.recent.length === 0 && (
-            <p className="text-center text-slate-400 dark:text-slate-500 py-8 text-xs font-bold uppercase">Sem registos</p>
-          )}
-        </div>
-      </div>
-
-      {/* Online Users (Admin only) */}
-      {isAdmin && (
-        <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
-          <div className="flex items-center waves-effect justify-between mb-4">
-            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Utilizadores Online</h3>
-            <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
-              <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-              {onlineUserIds.length} Ativos
-            </span>
-          </div>
-          <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar">
-            {users.filter(u => onlineUserIds.includes(String(u.id))).map(u => (
-              <div key={u.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all group">
-                <div className="relative">
-                  <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-sm group-hover:scale-110 transition-transform">
-                    {u.name.charAt(0).toUpperCase()}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Type Distribution */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4">Top 5 Tipos de Pedido</h3>
+              <div className="space-y-3">
+                {statsData.typeDistribution.map(([type, count], index) => (
+                  <div key={type} className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-white font-black text-sm shrink-0 ${index === 0 ? 'bg-indigo-500' : index === 1 ? 'bg-purple-500' : index === 2 ? 'bg-blue-500' : 'bg-slate-400'
+                      }`}>
+                      {index + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-bold text-slate-700 dark:text-slate-200 truncate">{toTitleCase(type)}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500">{count} chamadas</p>
+                    </div>
                   </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{u.name}</p>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-tighter">{u.role === UserRole.ADMIN ? 'Administrador' : (u.agency || 'Agente')}</p>
-                </div>
-                <button
-                  onClick={() => setActiveTab('chat')}
-                  className="p-2 text-slate-300 dark:text-slate-600 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"
-                  title="Enviar Mensagem"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-                </button>
+                ))}
+                {statsData.typeDistribution.length === 0 && (
+                  <p className="text-center text-slate-400 dark:text-slate-500 py-4 text-xs font-bold uppercase">Sem dados</p>
+                )}
               </div>
-            ))}
-            {users.filter(u => onlineUserIds.includes(String(u.id))).length === 0 && (
-              <div className="py-8 text-center bg-slate-50/50 dark:bg-slate-700/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-600">
-                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Ninguém online</p>
+            </div>
+
+            {/* Agent Ranking (Admin only) - Now in main grid */}
+            {isAdmin && (
+              <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 mb-4">Ranking de Agentes</h3>
+                <div className="space-y-3">
+                  {statsData.agentRanking.map(([name, data]: any, index) => (
+                    <div key={name} className="flex items-center gap-3">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 ${index === 0 ? 'bg-yellow-500 shadow-md shadow-yellow-200' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-amber-600' : 'bg-slate-300'
+                        }`}>
+                        {index + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">{name}</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-tighter">{data.resolved}/{data.count} resolvidos</p>
+                      </div>
+                      <span className="text-lg font-black text-indigo-600">{data.count}</span>
+                    </div>
+                  ))}
+                  {statsData.agentRanking.length === 0 && (
+                    <p className="text-center text-slate-400 dark:text-slate-500 py-4 text-xs font-bold uppercase">Sem dados</p>
+                  )}
+                </div>
               </div>
             )}
           </div>
         </div>
-      )}
-    </div>
-  </div>
+
+        {/* Right Column - Sidebar Statistics */}
+        <div className="space-y-6">
+          {/* Recent Activity - Now in sidebar */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Atividade Recente</h3>
+              <button
+                onClick={() => setActiveTab('calls')}
+                className="text-xs font-bold text-indigo-600 hover:text-indigo-700"
+              >
+                Ver Todos →
+              </button>
+            </div>
+            <div className="space-y-3 max-h-[340px] overflow-y-auto custom-scrollbar">
+              {statsData.recent.map(call => (
+                <div key={call.id} className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-slate-800 dark:text-slate-100 truncate text-xs">{formatName(call.cliente)}</p>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                        {toTitleCase(call.tipoPedido === 'Outro' ? call.outroTipoPedido : call.tipoPedido)}
+                      </p>
+                    </div>
+                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase shrink-0 ${call.estagio === 'Resolvido' ? 'bg-emerald-100 text-emerald-600'
+                      : call.estagio === 'Pendente' ? 'bg-orange-100 text-orange-600'
+                        : 'bg-amber-100 text-amber-600'
+                      }`}>
+                      {call.estagio}
+                    </span>
+                  </div>
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 mt-1">
+                    {new Date(call.data).toLocaleDateString('pt-PT')} • {new Date(call.data).toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                </div>
+              ))}
+              {statsData.recent.length === 0 && (
+                <p className="text-center text-slate-400 dark:text-slate-500 py-8 text-xs font-bold uppercase">Sem registos</p>
+              )}
+            </div>
+          </div>
+
+          {/* Online Users (Admin only) */}
+          {isAdmin && (
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-6">
+              <div className="flex items-center waves-effect justify-between mb-4">
+                <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Utilizadores Online</h3>
+                <span className="flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
+                  <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                  {onlineUserIds.length} Ativos
+                </span>
+              </div>
+              <div className="space-y-3 max-h-60 overflow-y-auto custom-scrollbar">
+                {users.filter(u => onlineUserIds.includes(String(u.id))).map(u => (
+                  <div key={u.id} className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-all group">
+                    <div className="relative">
+                      <div className="w-9 h-9 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-black text-sm group-hover:scale-110 transition-transform">
+                        {u.name.charAt(0).toUpperCase()}
+                      </div>
+                      <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-800 dark:text-slate-100 truncate">{u.name}</p>
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-tighter">{u.role === UserRole.ADMIN ? 'Administrador' : (u.agency || 'Agente')}</p>
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('chat')}
+                      className="p-2 text-slate-300 dark:text-slate-600 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-all"
+                      title="Enviar Mensagem"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                    </button>
+                  </div>
+                ))}
+                {users.filter(u => onlineUserIds.includes(String(u.id))).length === 0 && (
+                  <div className="py-8 text-center bg-slate-50/50 dark:bg-slate-700/30 rounded-2xl border border-dashed border-slate-200 dark:border-slate-600">
+                    <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Ninguém online</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div >
   );
 };

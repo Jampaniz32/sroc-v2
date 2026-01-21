@@ -4,6 +4,8 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import db from './config/database.js';
 
 // Routes
@@ -247,6 +249,25 @@ io.on('connection', (socket) => {
     });
 });
 
+// Serve static files from the React frontend app
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Em produção, servir os arquivos estáticos do build do frontend
+if (process.env.NODE_ENV === 'production') {
+    const distPath = path.join(__dirname, '../dist');
+    app.use(express.static(distPath));
+
+    console.log(`📂 Serving static files from: ${distPath}`);
+
+    // Qualquer requisição que não seja API, retorna o index.html (SPA)
+    app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api')) {
+            res.sendFile(path.join(distPath, 'index.html'));
+        }
+    });
+}
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Server error:', err);
@@ -255,11 +276,14 @@ app.use((err, req, res, next) => {
 
 // Start server
 const PORT = process.env.PORT || 3001;
-httpServer.listen(PORT, () => {
+httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚀 SROC Backend Server`);
     console.log(`📡 HTTP API: http://localhost:${PORT}`);
     console.log(`🔌 WebSocket: ws://localhost:${PORT}`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+    if (process.env.NODE_ENV === 'production') {
+        console.log(`📦 Serving Frontend from ../dist`);
+    }
 });
 
 export { io };

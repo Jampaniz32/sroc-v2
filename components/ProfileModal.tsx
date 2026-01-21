@@ -16,16 +16,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    
+
     // Simular delay de rede
     await new Promise(resolve => setTimeout(resolve, 600));
-    
+
     onUpdate({
       ...user,
       name,
       agency
     });
-    
+
     setIsSaving(false);
     onClose();
   };
@@ -33,8 +33,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
   return (
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
       <div className="min-h-full flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-        <div className="bg-white rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden animate-in zoom-in-95 duration-300 my-auto relative">
-          
+        <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] w-full max-w-lg shadow-2xl border border-slate-100 dark:border-slate-700 overflow-hidden animate-in zoom-in-95 duration-300 my-auto relative">
+
           {/* Header com gradiente */}
           <div className="bg-gradient-to-r from-slate-900 to-indigo-950 p-8 text-white relative overflow-hidden">
             <div className="relative z-10 flex items-center space-x-5">
@@ -48,7 +48,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
             </div>
             {/* Círculos decorativos */}
             <div className="absolute top-0 right-0 -mr-10 -mt-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
-            <button 
+            <button
               onClick={onClose}
               className="absolute top-6 right-6 text-white/50 hover:text-white transition-colors p-2 z-20"
             >
@@ -61,29 +61,29 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
           <form onSubmit={handleSave} className="p-8 space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nome de Exibição</label>
-                <input 
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Nome de Exibição</label>
+                <input
                   type="text"
                   required
-                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 outline-none font-bold text-slate-700 transition-all"
+                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 outline-none font-bold text-slate-700 dark:text-slate-100 transition-all"
                   value={name}
                   onChange={e => setName(e.target.value)}
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">ID de Utilizador</label>
-                <input 
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">ID de Utilizador</label>
+                <input
                   type="text"
                   disabled
-                  className="w-full px-5 py-3.5 rounded-xl border border-slate-100 bg-slate-100 text-slate-400 font-bold cursor-not-allowed"
+                  className="w-full px-5 py-3.5 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 font-bold cursor-not-allowed"
                   value={`@${user.username}`}
                 />
               </div>
               <div className="space-y-1.5 md:col-span-2">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Agência / Localização</label>
-                <input 
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Agência / Localização</label>
+                <input
                   type="text"
-                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 outline-none font-bold text-slate-700 transition-all"
+                  className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-500 outline-none font-bold text-slate-700 dark:text-slate-100 transition-all"
                   value={agency}
                   onChange={e => setAgency(e.target.value)}
                   placeholder="Ex: Sede Central"
@@ -91,29 +91,29 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
               </div>
             </div>
 
-            <div className="p-4 bg-indigo-50 rounded-2xl border border-indigo-100 flex items-start space-x-3">
-               <div className="mt-0.5 text-indigo-500">
-                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                 </svg>
-               </div>
-               <div>
-                 <p className="text-[10px] font-black text-indigo-900 uppercase tracking-tight">Informação de Segurança</p>
-                 <p className="text-[9px] text-indigo-700 font-medium leading-relaxed mt-1">
-                   Para alterar a sua senha de acesso, contacte o Administrador do sistema ou utilize a opção de redefinição nas configurações centrais.
-                 </p>
-               </div>
+            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl border border-indigo-100 dark:border-indigo-900/30 flex items-start space-x-3">
+              <div className="mt-0.5 text-indigo-500 dark:text-indigo-400">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[10px] font-black text-indigo-900 dark:text-indigo-100 uppercase tracking-tight">Informação de Segurança</p>
+                <p className="text-[9px] text-indigo-700 dark:text-indigo-400 font-medium leading-relaxed mt-1">
+                  Para alterar a sua senha de acesso, contacte o Administrador do sistema ou utilize a opção de redefinição nas configurações centrais.
+                </p>
+              </div>
             </div>
 
             <div className="flex space-x-3 pt-4">
-              <button 
+              <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-4 px-6 rounded-2xl bg-slate-100 text-slate-500 font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 transition-all"
+                className="flex-1 py-4 px-6 rounded-2xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-300 font-black text-[10px] uppercase tracking-widest hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
               >
                 Fechar
               </button>
-              <button 
+              <button
                 type="submit"
                 disabled={isSaving}
                 className="flex-[2] py-4 px-6 rounded-2xl bg-indigo-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-indigo-600/20 hover:bg-indigo-700 active:scale-95 transition-all disabled:opacity-50"
@@ -123,8 +123,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ user, onClose, onUpdate }) 
             </div>
           </form>
 
-          <div className="bg-slate-50 p-6 text-center border-t border-slate-100">
-            <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">SROC Security Module • Account ID: {user.id}</p>
+          <div className="bg-slate-50 dark:bg-slate-900/50 p-6 text-center border-t border-slate-100 dark:border-slate-700">
+            <p className="text-[9px] font-black text-slate-300 dark:text-slate-600 uppercase tracking-[0.3em]">SROC Security Module • Account ID: {user.id}</p>
           </div>
         </div>
       </div>

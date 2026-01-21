@@ -127,7 +127,7 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
     });
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
             {/* Header */}
             <div className="bg-gradient-to-r from-violet-600 to-purple-600 px-8 py-6">
                 <div className="flex items-center justify-between">
@@ -156,16 +156,16 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
 
             {/* Create/Edit Form */}
             {isCreating && (
-                <div className="p-8 bg-violet-50/50 border-b border-violet-100">
+                <div className="p-8 bg-violet-50/50 dark:bg-violet-900/10 border-b border-violet-100 dark:border-violet-900/30">
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Tipo de Solicitação <span className="text-rose-500">*</span>
                                 </label>
                                 <select
                                     required
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                                     value={formData.tipoSolicitacao}
                                     onChange={e => setFormData({ ...formData, tipoSolicitacao: e.target.value })}
                                 >
@@ -177,12 +177,12 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Estado do Pedido <span className="text-rose-500">*</span>
                                 </label>
                                 <select
                                     required
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                                     value={formData.estadoPedido}
                                     onChange={e => setFormData({ ...formData, estadoPedido: e.target.value })}
                                 >
@@ -194,45 +194,45 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Prioridade
                                 </label>
                                 <input
                                     type="number"
                                     min="1"
                                     max="100"
-                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                                    className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                                     value={formData.prioridade}
                                     onChange={e => setFormData({ ...formData, prioridade: parseInt(e.target.value) || 1 })}
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                     Estado
                                 </label>
                                 <div
                                     onClick={() => setFormData({ ...formData, ativo: !formData.ativo })}
-                                    className={`flex items-center justify-between px-4 py-3 bg-white border rounded-xl cursor-pointer hover:bg-slate-50 transition-colors ${formData.ativo ? 'border-emerald-300' : 'border-slate-200'}`}
+                                    className={`flex items-center justify-between px-4 py-3 bg-white dark:bg-slate-800 border rounded-xl cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors ${formData.ativo ? 'border-emerald-300 dark:border-emerald-500/50' : 'border-slate-200 dark:border-slate-700'}`}
                                 >
                                     <span className={`text-sm font-bold ${formData.ativo ? 'text-emerald-600' : 'text-slate-400'}`}>
                                         {formData.ativo ? 'Ativo' : 'Inativo'}
                                     </span>
-                                    <div className={`w-10 h-5 rounded-full relative transition-all duration-300 ${formData.ativo ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-                                        <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all duration-300 ${formData.ativo ? 'left-5.5' : 'left-0.5'}`}></div>
+                                    <div className={`w-10 h-5 rounded-full relative transition-all duration-300 ${formData.ativo ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}`}>
+                                        <div className={`absolute top-0.5 w-4 h-4 bg-white dark:bg-slate-300 rounded-full transition-all duration-300 ${formData.ativo ? 'left-5.5' : 'left-0.5'}`}></div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                 Título do Template <span className="text-rose-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 required
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                                 placeholder="Ex: Emissão de Carta de Quitação"
                                 value={formData.titulo}
                                 onChange={e => setFormData({ ...formData, titulo: e.target.value })}
@@ -240,13 +240,13 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                                 Texto da Observação <span className="text-rose-500">*</span>
                             </label>
                             <textarea
                                 required
                                 rows={4}
-                                className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                                className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                                 placeholder="Digite o texto padrão da observação..."
                                 value={formData.observacao}
                                 onChange={e => setFormData({ ...formData, observacao: e.target.value })}
@@ -273,19 +273,19 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
             )}
 
             {/* Filters */}
-            <div className="p-6 border-b border-slate-100">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-700">
                 <div className="flex flex-wrap gap-4">
                     <div className="flex-1 min-w-[200px]">
                         <input
                             type="text"
                             placeholder="Buscar templates..."
-                            className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none"
+                            className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-slate-700 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none"
                             value={searchTerm}
                             onChange={e => setSearchTerm(e.target.value)}
                         />
                     </div>
                     <select
-                        className="px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                        className="px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                         value={filterTipo}
                         onChange={e => setFilterTipo(e.target.value)}
                     >
@@ -295,7 +295,7 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                         ))}
                     </select>
                     <select
-                        className="px-4 py-3 rounded-xl border border-slate-200 bg-white focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
+                        className="px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-4 focus:ring-violet-500/10 focus:border-violet-500 transition-all outline-none font-medium"
                         value={filterEstado}
                         onChange={e => setFilterEstado(e.target.value)}
                     >
@@ -318,44 +318,44 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                     </div>
                 ) : filteredTemplates.length === 0 ? (
                     <div className="text-center py-12">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-slate-300 dark:text-slate-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <p className="text-slate-500 font-medium">Nenhum template encontrado</p>
-                        <p className="text-slate-400 text-sm mt-1">Crie um novo template para começar</p>
+                        <p className="text-slate-500 dark:text-slate-400 font-medium">Nenhum template encontrado</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-sm mt-1">Crie um novo template para começar</p>
                     </div>
                 ) : (
                     <div className="space-y-4">
                         {filteredTemplates.map(template => (
                             <div
                                 key={template.id}
-                                className={`p-5 rounded-xl border transition-all ${template.ativo ? 'bg-white border-slate-200 hover:shadow-md' : 'bg-slate-50 border-slate-100 opacity-60'}`}
+                                className={`p-5 rounded-xl border transition-all ${template.ativo ? 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-md' : 'bg-slate-50 dark:bg-slate-900/50 border-slate-100 dark:border-slate-800 opacity-60'}`}
                             >
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 min-w-0">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <h3 className="font-bold text-slate-800 truncate">{template.titulo}</h3>
-                                            <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded-md ${template.ativo ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-500'}`}>
+                                            <h3 className="font-bold text-slate-800 dark:text-slate-100 truncate">{template.titulo}</h3>
+                                            <span className={`px-2 py-1 text-[10px] font-bold uppercase rounded-md ${template.ativo ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400' : 'bg-slate-200 dark:bg-slate-700 text-slate-500 dark:text-slate-400'}`}>
                                                 {template.ativo ? 'Ativo' : 'Inativo'}
                                             </span>
-                                            <span className="px-2 py-1 text-[10px] font-bold uppercase bg-violet-100 text-violet-700 rounded-md">
+                                            <span className="px-2 py-1 text-[10px] font-bold uppercase bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 rounded-md">
                                                 Prioridade: {template.prioridade}
                                             </span>
                                         </div>
                                         <div className="flex flex-wrap gap-2 mb-3">
-                                            <span className="px-3 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-lg">
+                                            <span className="px-3 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-lg">
                                                 {template.tipo_solicitacao}
                                             </span>
-                                            <span className="px-3 py-1 text-xs font-medium bg-amber-50 text-amber-700 rounded-lg">
+                                            <span className="px-3 py-1 text-xs font-medium bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-lg">
                                                 {template.estado_pedido}
                                             </span>
                                         </div>
-                                        <p className="text-sm text-slate-600 line-clamp-2">{template.observacao}</p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2">{template.observacao}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button
                                             onClick={() => handleToggleActive(template)}
-                                            className={`p-2 rounded-lg transition-all ${template.ativo ? 'text-amber-600 hover:bg-amber-50' : 'text-emerald-600 hover:bg-emerald-50'}`}
+                                            className={`p-2 rounded-lg transition-all ${template.ativo ? 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/30' : 'text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/30'}`}
                                             title={template.ativo ? 'Desativar' : 'Ativar'}
                                         >
                                             {template.ativo ? (
@@ -370,7 +370,7 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                                         </button>
                                         <button
                                             onClick={() => handleEdit(template)}
-                                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all"
+                                            className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-all"
                                             title="Editar"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -379,7 +379,7 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
                                         </button>
                                         <button
                                             onClick={() => handleDelete(template.id)}
-                                            className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                                            className="p-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-all"
                                             title="Remover"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -395,13 +395,13 @@ const ObservationTemplatesManager: React.FC<ObservationTemplatesManagerProps> = 
             </div>
 
             {/* Stats Footer */}
-            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100">
-                <div className="flex items-center justify-between text-sm text-slate-500">
+            <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-700">
+                <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                     <span>{filteredTemplates.length} de {templates.length} templates</span>
                     <span>
-                        <span className="text-emerald-600 font-medium">{templates.filter(t => t.ativo).length} ativos</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">{templates.filter(t => t.ativo).length} ativos</span>
                         {' | '}
-                        <span className="text-slate-400">{templates.filter(t => !t.ativo).length} inativos</span>
+                        <span className="text-slate-400 dark:text-slate-600">{templates.filter(t => !t.ativo).length} inativos</span>
                     </span>
                 </div>
             </div>

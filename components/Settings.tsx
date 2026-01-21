@@ -160,7 +160,7 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
             onClick={() => setActiveSubTab(tab.id as any)}
             className={`w-full flex items-center space-x-3 px-5 py-3.5 rounded-xl font-bold transition-all text-sm ${activeSubTab === tab.id
               ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-              : 'bg-white text-slate-500 hover:bg-slate-50 border border-slate-200'
+              : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700'
               }`}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,7 +174,7 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
           <button
             onClick={handleSaveConfig}
             disabled={isSaving}
-            className={`w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-black transition-all disabled:opacity-70 flex items-center justify-center space-x-3`}
+            className={`w-full py-4 bg-slate-900 dark:bg-indigo-600 text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-black dark:hover:bg-indigo-700 transition-all disabled:opacity-70 flex items-center justify-center space-x-3`}
           >
             {isSaving && (
               <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -191,19 +191,19 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
 
         {activeSubTab === 'geral' && (
           <section className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
-              <div className="flex items-center justify-between border-b border-slate-50 pb-6">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-8">
+              <div className="flex items-center justify-between border-b border-slate-50 dark:border-slate-700 pb-6">
                 <div>
-                  <h3 className="text-xl font-black text-slate-800 tracking-tight">Identidade Corporativa</h3>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Marca e configurações regionais</p>
+                  <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Identidade Corporativa</h3>
+                  <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Marca e configurações regionais</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4 md:col-span-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Logótipo do Sistema</label>
-                  <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 p-8 border-2 border-dashed border-slate-100 rounded-2xl bg-slate-50/50 group hover:border-indigo-300 transition-colors">
-                    <div className="w-32 h-32 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shadow-inner shrink-0 p-2">
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Logótipo do Sistema</label>
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-8 p-8 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-2xl bg-slate-50/50 dark:bg-slate-900/50 group hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-colors">
+                    <div className="w-32 h-32 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl flex items-center justify-center overflow-hidden shadow-inner shrink-0 p-2">
                       {localConfig.logo ? (
                         <img
                           src={localConfig.logo}
@@ -216,8 +216,8 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                     </div>
                     <div className="flex-1 space-y-4 text-center sm:text-left">
                       <div>
-                        <p className="text-xs font-black text-slate-600 uppercase tracking-tight">Dimensionamento Automático</p>
-                        <p className="text-[10px] text-slate-400 font-medium leading-relaxed mt-1">
+                        <p className="text-xs font-black text-slate-600 dark:text-slate-300 uppercase tracking-tight">Dimensionamento Automático</p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed mt-1">
                           O sistema calculará automaticamente o tamanho ideal para a Sidebar (máx. 140x50px) e Ecrã de Login (máx. 200x100px). Utilize imagens com fundo transparente.
                         </p>
                       </div>
@@ -238,7 +238,7 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                         {localConfig.logo && (
                           <button
                             onClick={() => setLocalConfig({ ...localConfig, logo: '' })}
-                            className="px-6 py-3 bg-white text-rose-500 border border-rose-100 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 transition-all"
+                            className="px-6 py-3 bg-white dark:bg-slate-800 text-rose-500 border border-rose-100 dark:border-rose-900/30 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-rose-50 dark:hover:bg-rose-900/20 transition-all"
                           >
                             Remover
                           </button>
@@ -249,25 +249,25 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Nome da Organização</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Nome da Organização</label>
                   <input
                     type="text"
-                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50/30 focus:bg-white focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700"
+                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 transition-all font-bold text-slate-700 dark:text-slate-200"
                     value={localConfig.institutionName}
                     onChange={e => setLocalConfig({ ...localConfig, institutionName: e.target.value })}
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Fuso Horário Operacional</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Fuso Horário Operacional</label>
                   <div className="relative">
                     <select
-                      className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50/30 focus:bg-white transition-all font-bold text-slate-700 appearance-none"
+                      className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 transition-all font-bold text-slate-700 dark:text-slate-200 appearance-none"
                       value={localConfig.timezone}
                       onChange={e => setLocalConfig({ ...localConfig, timezone: e.target.value })}
                     >
                       {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
                     </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300">
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-300 dark:text-slate-600">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
                       </svg>
@@ -281,24 +281,24 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
 
         {activeSubTab === 'exportacao' && (
           <section className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight">Exportação de Dados</h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Configurações de relatórios e seleção de colunas</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Exportação de Dados</h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Configurações de relatórios e seleção de colunas</p>
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Logótipo dos Relatórios</label>
-                <div className="flex items-center space-x-6 p-6 border-2 border-dashed border-slate-100 rounded-2xl hover:bg-slate-50 transition-colors">
-                  <div className="w-24 h-24 bg-white border border-slate-200 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Logótipo dos Relatórios</label>
+                <div className="flex items-center space-x-6 p-6 border-2 border-dashed border-slate-100 dark:border-slate-700 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
+                  <div className="w-24 h-24 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl flex items-center justify-center overflow-hidden shadow-sm">
                     {localConfig.exportSettings.reportLogo ? (
                       <img src={localConfig.exportSettings.reportLogo} className="w-full h-full object-contain" alt="Report Logo" />
                     ) : (
-                      <svg className="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                      <svg className="w-8 h-8 text-slate-300 dark:text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                     )}
                   </div>
                   <div className="flex-1 space-y-2">
-                    <p className="text-xs text-slate-500 font-medium leading-relaxed">Este logótipo aparecerá apenas nos cabeçalhos dos ficheiros exportados.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">Este logótipo aparecerá apenas nos cabeçalhos dos ficheiros exportados.</p>
                     <input
                       type="file"
                       accept="image/*"
@@ -318,7 +318,7 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
 
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Campos para Exportação</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Campos para Exportação</label>
                   <button
                     onClick={() => setLocalConfig(prev => ({
                       ...prev,
@@ -338,11 +338,11 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                         key={field.id}
                         onClick={() => toggleExportField(field.id)}
                         className={`flex items-center space-x-3 p-4 rounded-xl border-2 transition-all text-left ${isSelected
-                          ? 'border-indigo-600 bg-indigo-50 text-indigo-900'
-                          : 'border-slate-50 bg-slate-50/50 text-slate-400 grayscale'
+                          ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-100'
+                          : 'border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 text-slate-400 dark:text-slate-600 grayscale'
                           }`}
                       >
-                        <div className={`w-5 h-5 rounded-md flex items-center justify-center border-2 ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-200'}`}>
+                        <div className={`w-5 h-5 rounded-md flex items-center justify-center border-2 ${isSelected ? 'bg-indigo-600 border-indigo-600 text-white' : 'border-slate-200 dark:border-slate-600'}`}>
                           {isSelected && <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
                         </div>
                         <span className="text-xs font-black uppercase tracking-tight">{field.label}</span>
@@ -351,17 +351,17 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                   })}
                 </div>
 
-                <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 flex items-start space-x-3">
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border border-blue-100 dark:border-blue-800/50 flex items-start space-x-3">
                   <svg className="w-5 h-5 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  <p className="text-[10px] text-blue-700 font-bold uppercase tracking-tight">Nota: Apenas os campos selecionados acima serão incluídos como colunas nos ficheiros XLS, CSV e XML.</p>
+                  <p className="text-[10px] text-blue-700 dark:text-blue-300 font-bold uppercase tracking-tight">Nota: Apenas os campos selecionados acima serão incluídos como colunas nos ficheiros XLS, CSV e XML.</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Formato Padrão</label>
+                  <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Formato Padrão</label>
                   <select
-                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 bg-slate-50/30 focus:bg-white transition-all font-bold text-slate-700"
+                    className="w-full px-5 py-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 transition-all font-bold text-slate-700 dark:text-slate-200"
                     value={localConfig.exportSettings.defaultFormat}
                     onChange={e => setLocalConfig({
                       ...localConfig,
@@ -378,26 +378,26 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
 
         {activeSubTab === 'atendimento' && (
           <section className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight">Fluxo Operacional</h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Status, tipos e regras de atendimento</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Fluxo Operacional</h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Status, tipos e regras de atendimento</p>
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Regras de SLA</label>
-                <div className="flex items-center space-x-6 bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Regras de SLA</label>
+                <div className="flex items-center space-x-6 bg-rose-50 dark:bg-rose-900/10 p-6 rounded-2xl border border-rose-100 dark:border-rose-900/30">
                   <div className="w-12 h-12 bg-rose-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-200">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                   </div>
                   <div>
-                    <h4 className="text-sm font-black text-rose-900 uppercase tracking-tight">Tempo de Resposta</h4>
-                    <p className="text-xs text-rose-700 font-medium">Alerta visual após tempo máximo excedido.</p>
+                    <h4 className="text-sm font-black text-rose-900 dark:text-rose-100 uppercase tracking-tight">Tempo de Resposta</h4>
+                    <p className="text-xs text-rose-700 dark:text-rose-400 font-medium">Alerta visual após tempo máximo excedido.</p>
                   </div>
                   <div className="flex items-center space-x-2 ml-auto">
                     <input
                       type="number"
-                      className="w-20 px-4 py-2 rounded-lg border border-rose-200 font-black text-rose-900"
+                      className="w-20 px-4 py-2 rounded-lg border border-rose-200 dark:border-rose-800 bg-white dark:bg-slate-800 font-black text-rose-900 dark:text-rose-100"
                       value={localConfig.slaMinutes}
                       onChange={e => setLocalConfig({ ...localConfig, slaMinutes: Number(e.target.value) })}
                     />
@@ -407,12 +407,12 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
               </div>
 
               <div className="space-y-4">
-                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Departamentos / Filas</label>
+                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Departamentos / Filas</label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     placeholder="Novo departamento..."
-                    className="flex-1 px-5 py-3 rounded-xl border border-slate-200 bg-slate-50/30 focus:bg-white font-bold text-slate-700 text-sm"
+                    className="flex-1 px-5 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 font-bold text-slate-700 dark:text-slate-200 text-sm"
                     value={newDept}
                     onChange={e => setNewDept(e.target.value)}
                   />
@@ -425,9 +425,9 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-2">
                   {localConfig.departments.map(dept => (
-                    <div key={dept} className="flex items-center justify-between p-3 bg-white border border-slate-200 rounded-xl hover:border-indigo-300 transition-all group">
-                      <span className="text-xs font-bold text-slate-700 uppercase tracking-tight">{dept}</span>
-                      <button onClick={() => removeDepartment(dept)} className="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all">
+                    <div key={dept} className="flex items-center justify-between p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-all group">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200 uppercase tracking-tight">{dept}</span>
+                      <button onClick={() => removeDepartment(dept)} className="text-slate-300 dark:text-slate-600 hover:text-rose-500 dark:hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
                       </button>
                     </div>
@@ -440,10 +440,10 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
 
         {activeSubTab === 'interface' && (
           <section className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight">Configuração de Campos</h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Personalize os dados obrigatórios do MVP</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Configuração de Campos</h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Personalize os dados obrigatórios do MVP</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -456,24 +456,24 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                   <div
                     key={field.key}
                     onClick={() => toggleField(field.key as any)}
-                    className="flex items-center justify-between p-5 bg-slate-50 border border-slate-100 rounded-2xl cursor-pointer hover:border-indigo-200 transition-all group"
+                    className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl cursor-pointer hover:border-indigo-200 dark:hover:border-indigo-500/50 transition-all group"
                   >
-                    <span className="font-bold text-sm text-slate-700 tracking-tight">{field.label}</span>
-                    <div className={`w-12 h-6 rounded-full relative transition-all duration-300 ${localConfig.fieldVisibility[field.key as keyof SystemConfig['fieldVisibility']] ? 'bg-indigo-600' : 'bg-slate-300'}`}>
-                      <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all duration-300 shadow-sm ${localConfig.fieldVisibility[field.key as keyof SystemConfig['fieldVisibility']] ? 'left-7' : 'left-1'}`}></div>
+                    <span className="font-bold text-sm text-slate-700 dark:text-slate-200 tracking-tight">{field.label}</span>
+                    <div className={`w-12 h-6 rounded-full relative transition-all duration-300 ${localConfig.fieldVisibility[field.key as keyof SystemConfig['fieldVisibility']] ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`}>
+                      <div className={`absolute top-1 w-4 h-4 bg-white dark:bg-slate-300 rounded-full transition-all duration-300 shadow-sm ${localConfig.fieldVisibility[field.key as keyof SystemConfig['fieldVisibility']] ? 'left-7' : 'left-1'}`}></div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="pt-8 border-t border-slate-50">
+              <div className="pt-8 border-t border-slate-50 dark:border-slate-700">
                 <div className="flex items-center space-x-3 mb-6">
-                  <div className="p-2 bg-indigo-50 text-indigo-600 rounded-lg">
+                  <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
                   </div>
                   <div>
-                    <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">Central de Notificações</h4>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest italic">Configure como o sistema o alerta em produção</p>
+                    <h4 className="text-sm font-black text-slate-800 dark:text-slate-100 uppercase tracking-tight">Central de Notificações</h4>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest italic">Configure como o sistema o alerta em produção</p>
                   </div>
                 </div>
 
@@ -483,12 +483,12 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                       requestNotificationPermission();
                       showToast('Permissão solicitada ao navegador', 'info');
                     }}
-                    className="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-md transition-all group"
+                    className="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:shadow-md transition-all group"
                   >
-                    <div className="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 rounded-full flex items-center justify-center mb-3 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-600 group-hover:bg-indigo-50 dark:group-hover:bg-indigo-900/30 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 rounded-full flex items-center justify-center mb-3 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Ativar Push</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Ativar Push</span>
                   </button>
 
                   <button
@@ -496,12 +496,12 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                       playNotificationSound();
                       showToast('A reproduzir som de teste...', 'info');
                     }}
-                    className="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-emerald-300 hover:shadow-md transition-all group"
+                    className="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-emerald-300 dark:hover:border-emerald-500/50 hover:shadow-md transition-all group"
                   >
-                    <div className="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-emerald-50 group-hover:text-emerald-600 rounded-full flex items-center justify-center mb-3 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-600 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-900/30 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 rounded-full flex items-center justify-center mb-3 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Testar Som</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Testar Som</span>
                   </button>
 
                   <button
@@ -509,17 +509,17 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
                       sendPushNotification('Teste de Notificação', 'Se está a ler isto, as notificações estão a funcionar corretamente!');
                       showToast('Notificação de teste enviada', 'success');
                     }}
-                    className="flex flex-col items-center justify-center p-6 bg-white border border-slate-200 rounded-2xl hover:border-amber-300 hover:shadow-md transition-all group"
+                    className="flex flex-col items-center justify-center p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl hover:border-amber-300 dark:hover:border-amber-500/50 hover:shadow-md transition-all group"
                   >
-                    <div className="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-600 rounded-full flex items-center justify-center mb-3 transition-colors">
+                    <div className="w-10 h-10 bg-slate-50 dark:bg-slate-900 text-slate-400 dark:text-slate-600 group-hover:bg-amber-50 dark:group-hover:bg-amber-900/30 group-hover:text-amber-600 dark:group-hover:text-amber-400 rounded-full flex items-center justify-center mb-3 transition-colors">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" /></svg>
                     </div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600">Testar Push</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-slate-400">Testar Push</span>
                   </button>
                 </div>
 
-                <div className="mt-6 p-4 bg-slate-50 rounded-2xl border border-slate-100 italic">
-                  <p className="text-[9px] text-slate-400 font-medium leading-relaxed">
+                <div className="mt-6 p-4 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-slate-100 dark:border-slate-700 italic">
+                  <p className="text-[9px] text-slate-400 dark:text-slate-500 font-medium leading-relaxed">
                     <strong>Dica de Produção:</strong> Se o som não tocar, certifique-se de que clicou em pelo menos um botão do sistema após carregar a página. A maioria dos browsers bloqueia áudio automático até haver interação.
                   </p>
                 </div>
@@ -540,14 +540,14 @@ const Settings: React.FC<SettingsProps> = ({ config, onUpdate, users, onAddUser,
 
         {activeSubTab === 'seguranca' && (
           <section className="space-y-6 animate-in slide-in-from-right-4 duration-300">
-            <div className="bg-white p-8 rounded-2xl border border-slate-100 shadow-sm space-y-8">
+            <div className="bg-white dark:bg-slate-800 p-8 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm space-y-8">
               <div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight">Audit Log & Segurança</h3>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Rastreabilidade de ações</p>
+                <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Audit Log & Segurança</h3>
+                <p className="text-xs text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Rastreabilidade de ações</p>
               </div>
 
-              <div className="overflow-hidden border border-slate-100 rounded-xl text-center py-12 opacity-40">
-                <p className="text-[10px] font-black uppercase tracking-widest">Aguardando novos eventos do sistema</p>
+              <div className="overflow-hidden border border-slate-100 dark:border-slate-700 rounded-xl text-center py-12 opacity-40">
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">Aguardando novos eventos do sistema</p>
               </div>
             </div>
           </section>

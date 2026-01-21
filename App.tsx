@@ -12,6 +12,7 @@ import Settings from './components/Settings';
 import Chat from './components/Chat';
 import ProfileModal from './components/ProfileModal';
 import ForcePasswordChangeModal from './components/ForcePasswordChangeModal';
+import ThemeToggle from './components/ThemeToggle';
 
 const TAB_NAMES: Record<string, string> = {
   'dashboard': 'Painel de Controlo',
@@ -331,7 +332,7 @@ const App: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-900">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
       </div>
     );
@@ -342,10 +343,10 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-900">
       <div className="fixed top-6 right-6 z-[9999] flex flex-col space-y-3 pointer-events-none">
         {toasts.map(t => (
-          <div key={t.id} className={`pointer-events-auto px-6 py-4 rounded-xl shadow-lg border bg-white ${t.type === 'error' ? 'text-red-600 border-red-100' : 'text-emerald-600 border-emerald-100'}`}>
+          <div key={t.id} className={`pointer-events-auto px-6 py-4 rounded-xl shadow-lg border bg-white dark:bg-slate-800 ${t.type === 'error' ? 'text-red-600 border-red-100 dark:border-red-900/50' : 'text-emerald-600 border-emerald-100 dark:border-emerald-900/50'}`}>
             <span className="font-bold text-xs uppercase">{t.message}</span>
           </div>
         ))}
@@ -364,37 +365,40 @@ const App: React.FC = () => {
       />
 
       <main className={`flex-1 px-6 pb-6 pt-0 transition-all duration-300 ${isSidebarOpen ? 'lg:ml-64' : ''}`}>
-        <header className="mb-0 py-6 flex justify-between items-center border-b border-slate-100 bg-white/50 backdrop-blur-md sticky top-0 z-[100] -mx-6 px-6">
+        <header className="mb-0 py-6 flex justify-between items-center border-b border-slate-100 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-[100] -mx-6 px-6">
           <div className="flex items-center gap-5">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2.5 bg-white rounded-xl border border-slate-200 text-slate-500 hover:text-indigo-600 hover:border-indigo-200 transition-all shadow-sm hover:shadow-md active:scale-95 group"
+              className="p-2.5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-200 dark:hover:border-indigo-700 transition-all shadow-sm hover:shadow-md active:scale-95 group"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 group-hover:rotate-180 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
               </svg>
             </button>
             <div className="flex flex-col">
-              <span className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.2em] mb-0.5">Menu</span>
-              <h1 className="text-xl font-black text-slate-800 tracking-tight leading-none">{TAB_NAMES[activeTab] || activeTab}</h1>
+              <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-[0.2em] mb-0.5">Menu</span>
+              <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">{TAB_NAMES[activeTab] || activeTab}</h1>
             </div>
           </div>
 
-          <div
-            className="flex items-center gap-4 bg-white pl-4 pr-1.5 py-1.5 rounded-[1.25rem] border border-slate-100 shadow-sm hover:shadow-lg hover:border-indigo-100 transition-all cursor-pointer group"
-            onClick={() => setIsProfileModalOpen(true)}
-          >
-            <div className="text-right hidden sm:block pr-1">
-              <p className="text-xs font-black text-slate-800 tracking-tight leading-none mb-1.5">{currentUser.name}</p>
-              <div className="flex items-center justify-end gap-2">
-                <span className="text-[9px] font-black bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-md border border-indigo-100/50 uppercase tracking-tighter">
-                  {currentShift}
-                </span>
-                <span className="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse"></span>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <div
+              className="flex items-center gap-4 bg-white dark:bg-slate-800 pl-4 pr-1.5 py-1.5 rounded-[1.25rem] border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-lg hover:border-indigo-100 dark:hover:border-indigo-700 transition-all cursor-pointer group"
+              onClick={() => setIsProfileModalOpen(true)}
+            >
+              <div className="text-right hidden sm:block pr-1">
+                <p className="text-xs font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none mb-1.5">{currentUser.name}</p>
+                <div className="flex items-center justify-end gap-2">
+                  <span className="text-[9px] font-black bg-indigo-50 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-md border border-indigo-100/50 dark:border-indigo-800/50 uppercase tracking-tighter">
+                    {currentShift}
+                  </span>
+                  <span className="w-2 h-2 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.4)] animate-pulse"></span>
+                </div>
               </div>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-black text-sm shadow-xl shadow-indigo-100 group-hover:rotate-6 transition-transform duration-300">
-              {currentUser.name.charAt(0).toUpperCase()}
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-white font-black text-sm shadow-xl shadow-indigo-100 group-hover:rotate-6 transition-transform duration-300">
+                {currentUser.name.charAt(0).toUpperCase()}
+              </div>
             </div>
           </div>
         </header>
@@ -450,13 +454,15 @@ const App: React.FC = () => {
 
       {isProfileModalOpen && <ProfileModal user={currentUser} onClose={() => setIsProfileModalOpen(false)} onUpdate={setCurrentUser} />}
 
-      {!!currentUser.requiresPasswordChange && (
-        <ForcePasswordChangeModal
-          user={currentUser}
-          onPasswordChanged={handlePasswordChanged}
-        />
-      )}
-    </div>
+      {
+        !!currentUser.requiresPasswordChange && (
+          <ForcePasswordChangeModal
+            user={currentUser}
+            onPasswordChanged={handlePasswordChanged}
+          />
+        )
+      }
+    </div >
   );
 };
 

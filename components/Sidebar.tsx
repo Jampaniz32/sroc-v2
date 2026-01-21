@@ -2,6 +2,7 @@
 import React from 'react';
 import { User, UserRole, SystemConfig } from '../types';
 import { ICONS } from '../constants';
+import ThemeToggle from './ThemeToggle';
 
 interface SidebarProps {
   user: User;
@@ -44,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogo
         ></div>
       )}
 
-      <aside className={`fixed inset-y-0 left-0 w-64 bg-[#0f172a] text-slate-300 z-50 flex flex-col border-r border-slate-800/50 transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed inset-y-0 left-0 w-64 bg-slate-900 dark:bg-[#0f172a] text-slate-300 z-50 flex flex-col border-r border-slate-800/50 dark:border-slate-800/50 transition-all duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6">
           <div className="flex flex-col space-y-4">
             <div className="flex items-center justify-between">
@@ -60,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogo
                 </div>
               ) : (
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center font-black text-xl text-white">
+                  <div className="w-10 h-10 bg-gradient-to-tr from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center font-black text-xl text-white shadow-lg">
                     S
                   </div>
                   <div className="overflow-hidden">
@@ -85,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogo
             </div>
 
             {config.logo && (
-              <div className="border-b border-slate-800/50 pb-2">
+              <div className="border-b border-slate-800 pb-2">
                 <h2 className="font-bold text-xs text-white leading-tight tracking-tight truncate opacity-70 uppercase">{config.institutionName}</h2>
               </div>
             )}
@@ -104,8 +105,8 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogo
                   if (window.innerWidth < 1024) onClose();
                 }}
                 className={`w-full flex items-center space-x-3 px-4 py-3.5 rounded-xl transition-all duration-300 relative group ${activeTab === item.id
-                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                    : 'hover:bg-slate-800/50 hover:text-white'
+                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                  : 'hover:bg-slate-800/50 hover:text-white'
                   }`}
               >
                 <div className={`${activeTab === item.id ? 'text-white' : 'text-slate-500 group-hover:text-indigo-400'}`}>
@@ -123,7 +124,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogo
             ))}
         </nav>
 
-        <div className="p-4 m-3 bg-slate-800/40 rounded-2xl border border-slate-700/30">
+        <div className="p-4 m-3 bg-slate-800/40 dark:bg-slate-800/60 rounded-2xl border border-slate-700/30 dark:border-slate-700/50">
           <div
             onClick={onOpenProfile}
             className="flex items-center space-x-3 mb-4 cursor-pointer hover:bg-slate-700/30 p-2 -m-2 rounded-xl transition-colors group"
@@ -139,12 +140,15 @@ const Sidebar: React.FC<SidebarProps> = ({ user, activeTab, setActiveTab, onLogo
               <p className="text-[8px] text-indigo-400 font-black uppercase tracking-widest">{user.role === UserRole.ADMIN ? 'Administrador' : 'Agente'}</p>
             </div>
           </div>
-          <button
-            onClick={onLogout}
-            className="w-full flex items-center justify-center space-x-2 px-3 py-2.5 bg-slate-800 hover:bg-red-500/10 hover:text-red-400 border border-slate-700 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest"
-          >
-            <span>Encerrar Sessão</span>
-          </button>
+          <div className="flex gap-2">
+            <ThemeToggle className="!bg-slate-800 !border-slate-700 !text-slate-400 hover:!bg-indigo-600 hover:!text-white hover:!border-indigo-500 w-[42px] h-[42px] flex items-center justify-center shrink-0" />
+            <button
+              onClick={onLogout}
+              className="flex-1 flex items-center justify-center space-x-2 px-3 py-2.5 bg-slate-800 hover:bg-red-500/10 hover:text-red-400 border border-slate-700 rounded-lg transition-all text-[10px] font-black uppercase tracking-widest"
+            >
+              <span>Encerrar Sessão</span>
+            </button>
+          </div>
         </div>
       </aside>
     </>

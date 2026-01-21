@@ -232,14 +232,14 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
                     { label: 'Utilizadores', val: status?.database.users, icon: Icons.Users, color: 'purple' },
                     { label: 'Mensagens', val: status?.database.messages, icon: Icons.Messages, color: 'emerald' }
                 ].map((item, idx) => (
-                    <div key={idx} className="bg-white rounded-[1.5rem] border border-slate-100 p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
-                        <div className={`absolute top-0 right-0 w-24 h-24 bg-${item.color}-50 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110`}></div>
+                    <div key={idx} className="bg-white dark:bg-slate-800 rounded-[1.5rem] border border-slate-100 dark:border-slate-700 p-6 shadow-sm hover:shadow-md transition-all group overflow-hidden relative">
+                        <div className={`absolute top-0 right-0 w-24 h-24 bg-${item.color}-50 dark:bg-${item.color}-900/20 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-110`}></div>
                         <div className="relative">
-                            <div className={`w-10 h-10 bg-${item.color}-50 text-${item.color}-600 rounded-xl flex items-center justify-center mb-4 border border-${item.color}-100`}>
+                            <div className={`w-10 h-10 bg-${item.color}-50 dark:bg-${item.color}-900/30 text-${item.color}-600 dark:text-${item.color}-400 rounded-xl flex items-center justify-center mb-4 border border-${item.color}-100 dark:border-${item.color}-800`}>
                                 <item.icon />
                             </div>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{item.label}</p>
-                            <p className="text-3xl font-black text-slate-800 mt-1 tracking-tight">{item.val || 0}</p>
+                            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{item.label}</p>
+                            <p className="text-3xl font-black text-slate-800 dark:text-slate-100 mt-1 tracking-tight">{item.val || 0}</p>
                         </div>
                     </div>
                 ))}
@@ -247,26 +247,26 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Age Distribution */}
-                <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-8 flex flex-col">
+                <div className="bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm p-8 flex flex-col">
                     <div className="flex items-center space-x-3 mb-8">
-                        <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
                             <Icons.Chart />
                         </div>
                         <div>
-                            <h3 className="text-lg font-black text-slate-800 tracking-tight leading-none">Distribuição de Dados</h3>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5">Segmentação por antiguidade</p>
+                            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">Distribuição de Dados</h3>
+                            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1.5">Segmentação por antiguidade</p>
                         </div>
                     </div>
 
                     {retention && (
                         <div className="grid grid-cols-2 gap-4 flex-1">
                             {[
-                                { lab: 'Últimos 30 dias', val: retention.retention.last30Days, bg: 'bg-emerald-50', txt: 'text-emerald-600', valc: 'text-emerald-700' },
-                                { lab: '31-90 dias', val: retention.retention.last90Days, bg: 'bg-blue-50', txt: 'text-blue-600', valc: 'text-blue-700' },
-                                { lab: '91 dias - 1 ano', val: retention.retention.last1Year, bg: 'bg-amber-50', txt: 'text-amber-600', valc: 'text-amber-700' },
-                                { lab: 'Mais de 1 ano', val: retention.retention.olderThan1Year, bg: 'bg-slate-50', txt: 'text-slate-500', valc: 'text-slate-700' }
+                                { lab: 'Últimos 30 dias', val: retention.retention.last30Days, bg: 'bg-emerald-50 dark:bg-emerald-900/20', txt: 'text-emerald-600 dark:text-emerald-400', valc: 'text-emerald-700 dark:text-emerald-300' },
+                                { lab: '31-90 dias', val: retention.retention.last90Days, bg: 'bg-blue-50 dark:bg-blue-900/20', txt: 'text-blue-600 dark:text-blue-400', valc: 'text-blue-700 dark:text-blue-300' },
+                                { lab: '91 dias - 1 ano', val: retention.retention.last1Year, bg: 'bg-amber-50 dark:bg-amber-900/20', txt: 'text-amber-600 dark:text-amber-400', valc: 'text-amber-700 dark:text-amber-300' },
+                                { lab: 'Mais de 1 ano', val: retention.retention.olderThan1Year, bg: 'bg-slate-50 dark:bg-slate-900/20', txt: 'text-slate-500 dark:text-slate-400', valc: 'text-slate-700 dark:text-slate-300' }
                             ].map((seg, i) => (
-                                <div key={i} className={`${seg.bg} p-5 rounded-2xl border border-white/20 relative overflow-hidden`}>
+                                <div key={i} className={`${seg.bg} p-5 rounded-2xl border border-white/20 dark:border-slate-700/50 relative overflow-hidden`}>
                                     <p className={`text-[10px] font-black uppercase tracking-wider ${seg.txt} relative z-10`}>{seg.lab}</p>
                                     <p className={`text-2xl font-black ${seg.valc} mt-2 relative z-10`}>{seg.val}</p>
                                 </div>
@@ -276,37 +276,37 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
                 </div>
 
                 {/* Backup Configuration */}
-                <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-8">
+                <div className="bg-white dark:bg-slate-800 rounded-[2rem] border border-slate-100 dark:border-slate-700 shadow-sm p-8">
                     <div className="flex items-center space-x-3 mb-8">
-                        <div className="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center">
+                        <div className="w-10 h-10 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center">
                             <Icons.Settings />
                         </div>
                         <div>
-                            <h3 className="text-lg font-black text-slate-800 tracking-tight leading-none">Política de Backup</h3>
-                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1.5">Automação e Retenção</p>
+                            <h3 className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">Política de Backup</h3>
+                            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-1.5">Automação e Retenção</p>
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <div className="flex items-center justify-between p-5 bg-slate-50 border border-slate-100 rounded-2xl group hover:border-indigo-100 transition-all">
+                        <div className="flex items-center justify-between p-5 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl group hover:border-indigo-100 dark:hover:border-indigo-500/50 transition-all">
                             <div className="flex items-center space-x-4">
-                                <div className={`w-1.5 h-10 rounded-full ${settings.autoBackupEnabled ? 'bg-indigo-500' : 'bg-slate-300'}`}></div>
+                                <div className={`w-1.5 h-10 rounded-full ${settings.autoBackupEnabled ? 'bg-indigo-500' : 'bg-slate-300 dark:bg-slate-700'}`}></div>
                                 <div>
-                                    <p className="font-black text-sm text-slate-800 tracking-tight">Agendamento Automático</p>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sincronização periódica</p>
+                                    <p className="font-black text-sm text-slate-800 dark:text-slate-100 tracking-tight">Agendamento Automático</p>
+                                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Sincronização periódica</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setSettings({ ...settings, autoBackupEnabled: !settings.autoBackupEnabled })}
-                                className={`w-14 h-7 rounded-full relative transition-all duration-300 ${settings.autoBackupEnabled ? 'bg-indigo-600' : 'bg-slate-300'}`}
+                                className={`w-14 h-7 rounded-full relative transition-all duration-300 ${settings.autoBackupEnabled ? 'bg-indigo-600' : 'bg-slate-300 dark:bg-slate-700'}`}
                             >
-                                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-sm ${settings.autoBackupEnabled ? 'left-8' : 'left-1'}`}></div>
+                                <div className={`absolute top-1 w-5 h-5 bg-white dark:bg-slate-300 rounded-full transition-all duration-300 shadow-sm ${settings.autoBackupEnabled ? 'left-8' : 'left-1'}`}></div>
                             </button>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                            <div className="p-5 bg-slate-50 border border-slate-100 rounded-2xl">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Frequência</label>
+                            <div className="p-5 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 block">Frequência</label>
                                 <div className="flex gap-2">
                                     {(['daily', 'weekly'] as const).map((freq) => (
                                         <button
@@ -314,7 +314,7 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
                                             onClick={() => setSettings({ ...settings, frequency: freq })}
                                             className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${settings.frequency === freq
                                                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                                                : 'bg-white text-slate-500 border-slate-200 hover:border-indigo-200'
+                                                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-500/50'
                                                 }`}
                                         >
                                             {freq === 'daily' ? 'Diário' : 'Semanal'}
@@ -323,12 +323,12 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
                                 </div>
                             </div>
 
-                            <div className="p-5 bg-slate-50 border border-slate-100 rounded-2xl">
-                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 block">Período de Retenção</label>
+                            <div className="p-5 bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 rounded-2xl">
+                                <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 block">Período de Retenção</label>
                                 <select
                                     value={settings.retentionMonths}
                                     onChange={(e) => setSettings({ ...settings, retentionMonths: parseInt(e.target.value) })}
-                                    className="w-full h-9 px-3 rounded-xl border border-slate-200 bg-white font-black text-[10px] uppercase tracking-widest focus:ring-4 focus:ring-indigo-500/10 outline-none"
+                                    className="w-full h-9 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-black text-[10px] uppercase tracking-widest focus:ring-4 focus:ring-indigo-500/10 outline-none"
                                 >
                                     <option value={6}>6 MESES</option>
                                     <option value={12}>1 ANO</option>
@@ -339,25 +339,25 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-5 bg-rose-50 border border-rose-100 rounded-2xl group hover:border-rose-200 transition-all">
+                        <div className="flex items-center justify-between p-5 bg-rose-50 dark:bg-rose-900/10 border border-rose-100 dark:border-rose-900/30 rounded-2xl group hover:border-rose-200 transition-all">
                             <div className="flex items-center space-x-4">
-                                <div className={`w-1.5 h-10 rounded-full ${settings.autoDeleteExpired ? 'bg-rose-500' : 'bg-rose-200'}`}></div>
+                                <div className={`w-1.5 h-10 rounded-full ${settings.autoDeleteExpired ? 'bg-rose-500' : 'bg-rose-200 dark:bg-rose-900/30'}`}></div>
                                 <div>
-                                    <p className="font-black text-sm text-rose-900 tracking-tight leading-none mb-1">Limpeza de Legado</p>
-                                    <p className="text-[9px] font-bold text-rose-600 uppercase tracking-widest">Exclusão permanente de dados</p>
+                                    <p className="font-black text-sm text-rose-900 dark:text-rose-100 tracking-tight leading-none mb-1">Limpeza de Legado</p>
+                                    <p className="text-[9px] font-bold text-rose-600 dark:text-rose-400 uppercase tracking-widest">Exclusão permanente de dados</p>
                                 </div>
                             </div>
                             <button
                                 onClick={() => setSettings({ ...settings, autoDeleteExpired: !settings.autoDeleteExpired })}
-                                className={`w-14 h-7 rounded-full relative transition-all duration-300 ${settings.autoDeleteExpired ? 'bg-rose-600' : 'bg-rose-200'}`}
+                                className={`w-14 h-7 rounded-full relative transition-all duration-300 ${settings.autoDeleteExpired ? 'bg-rose-600' : 'bg-rose-200 dark:bg-rose-900/30'}`}
                             >
-                                <div className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-sm ${settings.autoDeleteExpired ? 'left-8' : 'left-1'}`}></div>
+                                <div className={`absolute top-1 w-5 h-5 bg-white dark:bg-slate-300 rounded-full transition-all duration-300 shadow-sm ${settings.autoDeleteExpired ? 'left-8' : 'left-1'}`}></div>
                             </button>
                         </div>
 
                         <button
                             onClick={handleSaveSettings}
-                            className="w-full py-4 bg-slate-900 text-white rounded-[1.25rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-600 hover:scale-[1.02] transition-all shadow-xl shadow-slate-900/10 mt-2"
+                            className="w-full py-4 bg-slate-900 dark:bg-slate-700 text-white rounded-[1.25rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-indigo-600 hover:scale-[1.02] transition-all shadow-xl shadow-slate-900/10 dark:shadow-indigo-900/20 mt-2"
                         >
                             Gravar Diretrizes de Backup
                         </button>
@@ -367,22 +367,22 @@ const BackupSettings: React.FC<BackupSettingsProps> = ({ showToast }) => {
 
             {/* Last Backup Info */}
             {status?.backupSettings?.lastBackupDate && (
-                <div className="bg-white border-2 border-emerald-100 hover:border-emerald-200 rounded-[2rem] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 transition-all shadow-sm">
+                <div className="bg-white dark:bg-slate-800 border-2 border-emerald-100 dark:border-emerald-900/30 hover:border-emerald-200 dark:hover:border-emerald-700 rounded-[2rem] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 transition-all shadow-sm">
                     <div className="flex items-center space-x-5">
-                        <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center border border-emerald-100 shadow-inner">
+                        <div className="w-14 h-14 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center border border-emerald-100 dark:border-emerald-800 shadow-inner">
                             <Icons.Clock />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mb-1">Status de Disponibilidade</p>
-                            <h4 className="text-xl font-black text-slate-800 tracking-tight leading-none">Cópia de Segurança Atualizada</h4>
-                            <p className="text-xs font-bold text-slate-400 mt-2">
-                                Última integridade verificada em: <span className="text-slate-600">{new Date(status.backupSettings.lastBackupDate).toLocaleString('pt-PT')}</span>
+                            <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.2em] mb-1">Status de Disponibilidade</p>
+                            <h4 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight leading-none">Cópia de Segurança Atualizada</h4>
+                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-2">
+                                Última integridade verificada em: <span className="text-slate-600 dark:text-slate-300">{new Date(status.backupSettings.lastBackupDate).toLocaleString('pt-PT')}</span>
                             </p>
                         </div>
                     </div>
-                    <div className="flex items-center space-x-2 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100/50">
+                    <div className="flex items-center space-x-2 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-xl border border-emerald-100/50 dark:border-emerald-800/50">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
-                        <span className="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Ativo & Seguro</span>
+                        <span className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest">Ativo & Seguro</span>
                     </div>
                 </div>
             )}

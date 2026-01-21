@@ -192,7 +192,7 @@ const Dashboard: React.FC<DashboardProps> = ({ calls = [], user, users = [], onl
       dailyTrend,
       recent: filteredCalls.slice(0, 8)
     };
-  }, [filteredCalls, selectedPeriod]);
+  }, [filteredCalls, selectedPeriod, customRange]);
 
   const stageColors: Record<string, string> = {
     'Aberto': 'bg-blue-500',

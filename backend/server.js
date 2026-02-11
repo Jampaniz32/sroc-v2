@@ -94,8 +94,22 @@ app.use('/api/backup', backupRoutes);
 app.use('/api/observation-templates', observationTemplatesRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', timestamp: new Date().toISOString() });
+app.get('/api/health', async (req, res) => {
+    try {
+        await db.query('SELECT 1');
+        res.json({
+            status: 'OK',
+            database: 'Connected',
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        res.status(503).json({
+            status: 'ERROR',
+            database: 'Disconnected',
+            error: error.message,
+            timestamp: new Date().toISOString()
+        });
+    }
 });
 
 // Socket.io - Real-time Chat

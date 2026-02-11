@@ -20,6 +20,26 @@ const pool = mysql.createPool({
   charset: 'UTF8MB4_UNICODE_CI'
 });
 
+// Manejo de erros do pool
+pool.on('error', (err) => {
+  console.error('⚠️ Unexpected error on idle client:', err.message);
+  if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+    console.warn('🔄 Connection lost. Pool will attempt to reconnect on next query.');
+  }
+});
+
+// Mecanismo de Ping Keep-Alive (cada 30 segundos)
+setInterval(async () => {
+  try {
+    const connection = await pool.getConnection();
+    await connection.query('SELECT 1');
+    connection.release();
+    // console.log('💓 Database keep-alive ping successful');
+  } catch (err) {
+    console.error('💔 Database keep-alive ping failed:', err.message);
+  }
+}, 30000);
+
 // Test database connection
 pool.getConnection()
   .then(connection => {

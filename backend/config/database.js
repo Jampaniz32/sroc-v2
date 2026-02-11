@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const pool = mysql.createPool({
+const dbConfig = {
   host: process.env.MYSQLHOST || process.env.DB_HOST || 'localhost',
   user: process.env.MYSQLUSER || process.env.DB_USER || 'root',
   password: process.env.MYSQLPASSWORD || process.env.DB_PASSWORD || '',
@@ -11,14 +11,21 @@ const pool = mysql.createPool({
   port: process.env.MYSQLPORT || process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 10,
-  maxIdle: 10, // max idle connections, the default value is the same as `connectionLimit`
-  idleTimeout: 60000, // idle connections timeout, in milliseconds, the default value 60000
+  maxIdle: 10,
+  idleTimeout: 60000,
   queueLimit: 0,
   enableKeepAlive: true,
-  keepAliveInitialDelay: 10000, // 10 seconds
-  connectTimeout: 10000, // 10 seconds
-  charset: 'UTF8MB4_UNICODE_CI'
-});
+  keepAliveInitialDelay: 10000,
+  connectTimeout: 20000, // Increased to 20s
+  charset: 'UTF8MB4_UNICODE_CI',
+  ssl: {
+    rejectUnauthorized: false // Common requirement for cloud databases
+  }
+};
+
+console.log(`📡 Connecting to DB at ${dbConfig.host}:${dbConfig.port}...`);
+
+const pool = mysql.createPool(dbConfig);
 
 // Manejo de erros do pool
 pool.on('error', (err) => {

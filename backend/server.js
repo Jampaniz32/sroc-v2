@@ -292,6 +292,7 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, '0.0.0.0', () => {
     console.log(`\n🚀 SROC Backend Server`);
+    console.log(`📡 DB Host: ${process.env.MYSQLHOST || process.env.DB_HOST || 'localhost'}`);
     console.log(`📡 HTTP API: http://localhost:${PORT}`);
     console.log(`🔌 WebSocket: ws://localhost:${PORT}`);
     console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}\n`);

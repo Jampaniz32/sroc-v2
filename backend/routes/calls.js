@@ -43,8 +43,9 @@ router.get('/', async (req, res) => {
         const conditions = [];
 
         if (search) {
-            const searchTerm = `%${search}%`;
-            conditions.push('(cliente ILIKE ? OR contacto ILIKE ? OR nuit ILIKE ? OR observacoes ILIKE ?)');
+            const searchLower = search.toLowerCase();
+            const searchTerm = `%${searchLower}%`;
+            conditions.push('(LOWER(cliente) LIKE ? OR LOWER(contacto) LIKE ? OR LOWER(nuit) LIKE ? OR LOWER(observacoes) LIKE ?)');
             params.push(searchTerm, searchTerm, searchTerm, searchTerm);
         }
 

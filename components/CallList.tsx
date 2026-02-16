@@ -87,7 +87,7 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
     if (showExportMenu && exportButtonRef.current) {
       const rect = exportButtonRef.current.getBoundingClientRect();
       setMenuPosition({
-        top: rect.bottom + 8,
+        top: rect.bottom + 2,
         left: rect.right - 192 // 192px = w-48
       });
     }
@@ -277,8 +277,8 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
             <p>Deseja processar a exportação de <strong>{total}</strong> registos?</p>
 
             {['XLS', 'XLSX'].includes(selectedFormat || '') && (
-              <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 space-y-3">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Modo de Exportação:</p>
+              <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700 space-y-2">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Modo de Exportação:</p>
 
                 <label className="flex items-center space-x-3 cursor-pointer group">
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${exportMode === 'consolidated' ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300 bg-white'}`}>
@@ -286,8 +286,8 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                   </div>
                   <input type="radio" name="exportMode" value="consolidated" checked={exportMode === 'consolidated'} onChange={() => setExportMode('consolidated')} className="hidden" />
                   <div>
-                    <span className={`block text-sm font-bold ${exportMode === 'consolidated' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Consolidado (Aba Única)</span>
-                    <span className="text-[10px] text-slate-400">Gera um ficheiro com todos os registos numa única lista cronológica.</span>
+                    <span className={`block text-xs font-bold ${exportMode === 'consolidated' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Consolidado (Aba Única)</span>
+                    <span className="text-[9px] text-slate-400">Gera um ficheiro com todos os registos numa única lista cronológica.</span>
                   </div>
                 </label>
 
@@ -299,8 +299,8 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                   </div>
                   <input type="radio" name="exportMode" value="segmented" checked={exportMode === 'segmented'} onChange={() => setExportMode('segmented')} className="hidden" />
                   <div>
-                    <span className={`block text-sm font-bold ${exportMode === 'segmented' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Segmentado (Por Dia)</span>
-                    <span className="text-[10px] text-slate-400">Gera um ficheiro com múltiplas abas, separando os registos por dia.</span>
+                    <span className={`block text-xs font-bold ${exportMode === 'segmented' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Segmentado (Por Dia)</span>
+                    <span className="text-[9px] text-slate-400">Gera um ficheiro com múltiplas abas, separando os registos por dia.</span>
                   </div>
                 </label>
 
@@ -312,13 +312,13 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                   </div>
                   <input type="radio" name="exportMode" value="custom_date" checked={exportMode === 'custom_date'} onChange={() => setExportMode('custom_date')} className="hidden" />
                   <div className="w-full">
-                    <span className={`block text-sm font-bold ${exportMode === 'custom_date' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Filtrar por Data (Dia/Mês/Ano)</span>
-                    <span className="text-[10px] text-slate-400 block mb-2">Exporta registos de uma data específica ou mês completo.</span>
+                    <span className={`block text-xs font-bold ${exportMode === 'custom_date' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Filtrar por Data (Dia/Mês/Ano)</span>
+                    <span className="text-[9px] text-slate-400 block mb-1">Exporta registos de uma data específica ou mês completo.</span>
 
                     {exportMode === 'custom_date' && (
-                      <div className="grid grid-cols-3 gap-2 mt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="grid grid-cols-3 gap-2 mt-1 animate-in fade-in slide-in-from-top-1 duration-300">
                         <select
-                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
+                          className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600 text-[10px] font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
                           value={exportDay}
                           onChange={e => setExportDay(e.target.value)}
                         >
@@ -328,7 +328,7 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                           ))}
                         </select>
                         <select
-                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
+                          className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600 text-[10px] font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
                           value={exportMonth}
                           onChange={e => setExportMonth(e.target.value)}
                         >
@@ -337,7 +337,7 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                           ))}
                         </select>
                         <select
-                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
+                          className="px-2 py-1 rounded-md border border-slate-200 dark:border-slate-600 text-[10px] font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
                           value={exportYear}
                           onChange={e => setExportYear(parseInt(e.target.value))}
                         >

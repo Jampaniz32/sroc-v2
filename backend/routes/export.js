@@ -188,13 +188,42 @@ router.get('/', async (req, res) => {
             worksheet.getRow(2).height = 35;
             worksheet.mergeCells(`A2:${lastColLetter}2`);
 
-            // Usar a data do grupo para o título se for segmentado, caso contrário usa a data de hoje (extração)
-            const dateToUse = (currentExportMode === 'segmented' && groupRows.length > 0) ? new Date(groupRows[0].data) : today;
+            // Usar a data do grupo para o título se for segmentado
+            let displayDate = '';
+            if (currentExportMode === 'segmented' && groupRows.length > 0) {
+                const d = new Date(groupRows[0].data);
+                const day = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', day: '2-digit' });
+                const month = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', month: 'long' }).toUpperCase();
+                const year = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', year: 'numeric' });
+                displayDate = `${day} DE ${month} DE ${year}`;
+            } else {
+                // Modo consolidado: mostrar intervalo se houver múltiplas datas, ou data única
+                const datesC = groupRows.map(r => new Date(r.data)).sort((a, b) => a - b);
+                if (datesC.length > 0) {
+                    const first = datesC[0];
+                    const last = datesC[datesC.length - 1];
 
-            const dayMaputo = dateToUse.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', day: '2-digit' });
-            const monthMaputo = dateToUse.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', month: 'long' }).toUpperCase();
-            const yearMaputo = dateToUse.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', year: 'numeric' });
-            const displayDate = `${dayMaputo} DE ${monthMaputo} DE ${yearMaputo}`;
+                    const fmt = (d) => {
+                        const day = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', day: '2-digit' });
+                        const month = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', month: 'long' }).toUpperCase();
+                        const year = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', year: 'numeric' });
+                        return `${day} DE ${month} DE ${year}`;
+                    };
+
+                    if (first.toDateString() === last.toDateString()) {
+                        displayDate = fmt(first);
+                    } else {
+                        displayDate = `${fmt(first)} A ${fmt(last)}`;
+                    }
+                } else {
+                    // Fallback se não houver linhas (embora verificado antes)
+                    const d = new Date();
+                    const day = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', day: '2-digit' });
+                    const month = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', month: 'long' }).toUpperCase();
+                    const year = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', year: 'numeric' });
+                    displayDate = `${day} DE ${month} DE ${year}`;
+                }
+            }
 
             const titleCell = worksheet.getCell('A2');
             titleCell.value = `RELATÓRIO DE CHAMADA - ${displayDate}`;
@@ -262,19 +291,35 @@ router.get('/', async (req, res) => {
 
         // Nome do ficheiro descritivo garantindo fuso horário correto
         const dates = rows.map(r => new Date(r.data)).sort((a, b) => a - b);
+        let fileName = '';
 
-        // Formatar para YYYY-MM-DD no fuso de Maputo
-        const formatDateForFile = (date) => {
-            const d = new Date(date.toLocaleString('en-US', { timeZone: 'Africa/Maputo' }));
-            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-        };
+        if (dates.length > 0) {
+            const first = dates[0];
+            const last = dates[dates.length - 1];
 
-        const firstDateFile = formatDateForFile(dates[0]);
-        const lastDateFile = formatDateForFile(dates[dates.length - 1]);
-        const fileDateRange = firstDateFile === lastDateFile ? firstDateFile : `${firstDateFile}_a_${lastDateFile}`;
-        const modeSuffix = currentExportMode === 'segmented' ? '_Segmentado' : '';
+            const isSameDay = first.toLocaleDateString('pt-PT', { timeZone: 'Africa/Maputo' }) === last.toLocaleDateString('pt-PT', { timeZone: 'Africa/Maputo' });
 
-        const fileName = `RELATÓRIO DE CHAMADA - ${fileDateRange}.xlsx`;
+            if (isSameDay) {
+                // RELATÓRIO DE CHAMADA - 02 DE FEVEREIRO DE 2026
+                const day = first.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', day: '2-digit' });
+                const month = first.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', month: 'long' }).toUpperCase();
+                const year = first.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', year: 'numeric' });
+                fileName = `RELATÓRIO DE CHAMADA - ${day} DE ${month} DE ${year}.xlsx`;
+            } else {
+                // RELATÓRIO DE CHAMADA - data X a data Y (usando formato DD-MM-YYYY para ser válido no filename)
+                // User pediu "data X a data Y", mas filename não pode ter barras. Vou usar traços ou formato longo se não for muito grande.
+                // Vou usar formato limpo: RELATÓRIO DE CHAMADA - 02-02-2026 A 05-02-2026
+                const fmt = (d) => {
+                    const day = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', day: '2-digit' });
+                    const month = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', month: '2-digit' });
+                    const year = d.toLocaleString('pt-PT', { timeZone: 'Africa/Maputo', year: 'numeric' });
+                    return `${day}-${month}-${year}`;
+                };
+                fileName = `RELATÓRIO DE CHAMADA - ${fmt(first)} A ${fmt(last)}.xlsx`;
+            }
+        } else {
+            fileName = `RELATÓRIO DE CHAMADA - SEM DADOS.xlsx`;
+        }
 
         // Headers
         const safeFileName = fileName.normalize('NFD').replace(/[\u0300-\u036f]/g, '');

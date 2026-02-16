@@ -103,7 +103,10 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
     setShowExportMenu(false);
   };
 
-  const [exportMode, setExportMode] = useState<'consolidated' | 'segmented'>('consolidated');
+  const [exportMode, setExportMode] = useState<'consolidated' | 'segmented' | 'custom_date'>('consolidated');
+  const [exportYear, setExportYear] = useState(new Date().getFullYear());
+  const [exportMonth, setExportMonth] = useState((new Date().getMonth() + 1).toString());
+  const [exportDay, setExportDay] = useState('');
 
   const confirmExport = async () => {
     setIsExporting(true);
@@ -113,17 +116,39 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
       if (selectedFormat === 'XLS') {
         console.log('🚀 Iniciando download robusto via backend com filtros...');
 
+        // Lógica para datas customizadas
+        let finalStartDate = startDate;
+        let finalEndDate = endDate;
+
+        if (exportMode === 'custom_date') {
+          const year = parseInt(exportYear.toString());
+          const month = parseInt(exportMonth);
+
+          if (exportDay) {
+            // Exportar dia específico
+            const day = parseInt(exportDay);
+            const dateStr = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+            finalStartDate = dateStr;
+            finalEndDate = dateStr;
+          } else {
+            // Exportar mês inteiro
+            const lastDay = new Date(year, month, 0).getDate(); // Último dia do mês
+            finalStartDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+            finalEndDate = `${year}-${month.toString().padStart(2, '0')}-${lastDay}`;
+          }
+        }
+
         // Construir query string de filtros
         const params = new URLSearchParams({
           search: searchTerm,
-          startDate,
-          endDate,
+          startDate: finalStartDate,
+          endDate: finalEndDate,
           stage: filterStage,
           type: filterType,
           agentId: user.role === UserRole.ADMIN ? filterAgent : user.id.toString(),
           fields: (systemConfig.exportSettings.selectedFields || []).join(','),
           format: selectedFormat,
-          exportMode // Adicionado parâmetro de modo
+          exportMode: exportMode === 'custom_date' ? 'consolidated' : exportMode // Backend não precisa saber do custom_date, apenas recebe as datas filtradas
         });
 
         // Fetch o ficheiro do backend com filtros
@@ -278,6 +303,52 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                     <span className="text-[10px] text-slate-400">Gera um ficheiro com múltiplas abas, separando os registos por dia.</span>
                   </div>
                 </label>
+
+                <div className="h-px bg-slate-200 dark:bg-slate-700" />
+
+                <label className="flex items-start space-x-3 cursor-pointer group">
+                  <div className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${exportMode === 'custom_date' ? 'border-indigo-600 bg-indigo-600' : 'border-slate-300 bg-white'}`}>
+                    {exportMode === 'custom_date' && <div className="w-2 h-2 bg-white rounded-full" />}
+                  </div>
+                  <input type="radio" name="exportMode" value="custom_date" checked={exportMode === 'custom_date'} onChange={() => setExportMode('custom_date')} className="hidden" />
+                  <div className="w-full">
+                    <span className={`block text-sm font-bold ${exportMode === 'custom_date' ? 'text-indigo-900 dark:text-indigo-100' : 'text-slate-600 dark:text-slate-300'}`}>Filtrar por Data (Dia/Mês/Ano)</span>
+                    <span className="text-[10px] text-slate-400 block mb-2">Exporta registos de uma data específica ou mês completo.</span>
+
+                    {exportMode === 'custom_date' && (
+                      <div className="grid grid-cols-3 gap-2 mt-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                        <select
+                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
+                          value={exportDay}
+                          onChange={e => setExportDay(e.target.value)}
+                        >
+                          <option value="">Dia (Todos)</option>
+                          {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                            <option key={d} value={d}>{d}</option>
+                          ))}
+                        </select>
+                        <select
+                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
+                          value={exportMonth}
+                          onChange={e => setExportMonth(e.target.value)}
+                        >
+                          {['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].map((m, i) => (
+                            <option key={i} value={i + 1}>{m}</option>
+                          ))}
+                        </select>
+                        <select
+                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 text-xs font-bold bg-white dark:bg-slate-700 outline-none focus:border-indigo-500"
+                          value={exportYear}
+                          onChange={e => setExportYear(parseInt(e.target.value))}
+                        >
+                          {Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                            <option key={y} value={y}>{y}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+                </label>
               </div>
             )}
 
@@ -289,9 +360,9 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
         onConfirm={confirmExport}
         onCancel={() => setIsExportModalOpen(false)}
         icon={
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          < svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1.01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" />
-          </svg>
+          </svg >
         }
       />
 
@@ -312,31 +383,33 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
       />
 
       {/* Modal de Edição */}
-      {isEditModalOpen && recordToEdit && (
-        <div className="fixed inset-0 z-[120] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
-          <div className="min-h-full flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
-            <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] w-full max-w-5xl overflow-hidden shadow-2xl border border-white/20 dark:border-slate-700/50 animate-in zoom-in-95 duration-200 my-auto">
-              <div className="p-8 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-700/30">
-                <div>
-                  <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Editar Registo Operacional</h3>
-                  <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Ref: {recordToEdit.id}</p>
+      {
+        isEditModalOpen && recordToEdit && (
+          <div className="fixed inset-0 z-[120] overflow-y-auto bg-slate-900/60 backdrop-blur-sm">
+            <div className="min-h-full flex items-center justify-center p-4 sm:p-6 animate-in fade-in duration-300">
+              <div className="bg-white dark:bg-slate-800 rounded-[2.5rem] w-full max-w-5xl overflow-hidden shadow-2xl border border-white/20 dark:border-slate-700/50 animate-in zoom-in-95 duration-200 my-auto">
+                <div className="p-8 border-b border-slate-100 dark:border-slate-700 flex justify-between items-center bg-slate-50/50 dark:bg-slate-700/30">
+                  <div>
+                    <h3 className="text-xl font-black text-slate-800 dark:text-slate-100 tracking-tight">Editar Registo Operacional</h3>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest mt-1">Ref: {recordToEdit.id}</p>
+                  </div>
+                  <button
+                    onClick={() => { setIsEditModalOpen(false); setRecordToEdit(null); }}
+                    className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-100 transition-all shadow-sm"
+                  >✕</button>
                 </div>
-                <button
-                  onClick={() => { setIsEditModalOpen(false); setRecordToEdit(null); }}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-400 dark:text-slate-300 hover:text-slate-600 dark:hover:text-slate-100 transition-all shadow-sm"
-                >✕</button>
-              </div>
-              <div className="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
-                <CallForm
-                  user={user}
-                  onAdd={handleUpdate}
-                  initialData={recordToEdit}
-                />
+                <div className="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                  <CallForm
+                    user={user}
+                    onAdd={handleUpdate}
+                    initialData={recordToEdit}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
         <div className="p-5 space-y-4">
@@ -553,34 +626,36 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
       </div>
 
       {/* Dropdown Menu (Portal-style com position fixed) */}
-      {showExportMenu && !isExporting && (
-        <>
-          {/* Backdrop para fechar ao clicar fora */}
-          <div
-            className="fixed inset-0 z-[9998]"
-            onClick={() => setShowExportMenu(false)}
-          />
-          {/* Menu */}
-          <div
-            className="fixed w-48 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 z-[9999]"
-            style={{
-              top: `${menuPosition.top}px`,
-              left: `${menuPosition.left}px`
-            }}
-          >
-            {['XLS', 'CSV', 'PDF', 'JSON', 'XML'].map((fmt) => (
-              <button
-                key={fmt}
-                onClick={() => handleExportClick(fmt as ExportFormat)}
-                className="w-full text-left px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold text-xs text-slate-700 dark:text-slate-200 first:rounded-t-xl last:rounded-b-xl transition-colors border-b last:border-0 border-slate-50 dark:border-slate-700"
-              >
-                Exportar como {fmt}
-              </button>
-            ))}
-          </div>
-        </>
-      )}
-    </div>
+      {
+        showExportMenu && !isExporting && (
+          <>
+            {/* Backdrop para fechar ao clicar fora */}
+            <div
+              className="fixed inset-0 z-[9998]"
+              onClick={() => setShowExportMenu(false)}
+            />
+            {/* Menu */}
+            <div
+              className="fixed w-48 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 z-[9999]"
+              style={{
+                top: `${menuPosition.top}px`,
+                left: `${menuPosition.left}px`
+              }}
+            >
+              {['XLS', 'CSV', 'PDF', 'JSON', 'XML'].map((fmt) => (
+                <button
+                  key={fmt}
+                  onClick={() => handleExportClick(fmt as ExportFormat)}
+                  className="w-full text-left px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 font-bold text-xs text-slate-700 dark:text-slate-200 first:rounded-t-xl last:rounded-b-xl transition-colors border-b last:border-0 border-slate-50 dark:border-slate-700"
+                >
+                  Exportar como {fmt}
+                </button>
+              ))}
+            </div>
+          </>
+        )
+      }
+    </div >
   );
 };
 

@@ -1,13 +1,13 @@
-
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { CallRecord, User, UserRole, CallType, SystemConfig, CallStage, ExportFormat } from '../types';
 import { formatDate, handleExport, formatName, formatPhone, formatObservations, toTitleCase } from '../utils';
 import { ICONS, CALL_STAGES, CALL_TYPES } from '../constants';
 import ConfirmationModal from './ConfirmationModal';
 import CallForm from './CallForm';
+import { callsAPI } from '../services/api';
 
 interface CallListProps {
-  calls: CallRecord[];
+  calls: CallRecord[]; // Managed globally for Dashboard, but CallList will now fetch its own paginated data
   user: User;
   users: User[];
   systemConfig: SystemConfig;
@@ -15,7 +15,7 @@ interface CallListProps {
   onUpdateCall: (record: CallRecord) => void;
 }
 
-const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], systemConfig, onDeleteCall, onUpdateCall }) => {
+const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onDeleteCall, onUpdateCall }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStage, setFilterStage] = useState('');
   const [filterType, setFilterType] = useState('');
@@ -37,67 +37,46 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
   const exportButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Paginação - limitar a 10 linhas por padrão
-  const [showAllRecords, setShowAllRecords] = useState(false);
-  const RECORDS_LIMIT = 10;
+  // Paginação Real
+  const [paginatedCalls, setPaginatedCalls] = useState<CallRecord[]>([]);
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Proteção contra calls undefined
-  const safeCalls = useMemo(() => Array.isArray(calls) ? calls : [], [calls]);
+  const fetchPaginatedCalls = async () => {
+    setIsLoading(true);
+    try {
+      const params: any = {
+        page,
+        limit,
+        search: searchTerm,
+        stage: filterStage,
+        type: filterType,
+        startDate,
+        endDate
+      };
 
-  const filteredCalls = useMemo(() => {
-    // DEBUG: Mostrando tudo temporariamente para confirmar se os dados existem
-    // DEBUG DE IDs
-    if (user.role !== UserRole.ADMIN) {
-      console.log('DEBUG FILTRO:', {
-        meuId: user.id.toString(),
-        totalChamadas: safeCalls.length,
-        chamadasDesteAgente: safeCalls.filter(c => c.agenteId == user.id || c.agenteId == user.id.toString()).length,
-        exemploChamada: safeCalls[0] ? { id: safeCalls[0].agenteId, tipo: typeof safeCalls[0].agenteId } : 'sem chamadas'
-      });
+      // Se não for admin, filtrar automaticamente pelo agente logado
+      if (user.role !== UserRole.ADMIN) {
+        params.agentId = user.id;
+      } else if (filterAgent) {
+        params.agentId = filterAgent;
+      }
+
+      const response = await callsAPI.getAll(params);
+      setPaginatedCalls(response.data);
+      setTotal(response.total);
+    } catch (error) {
+      console.error('Erro ao buscar chamadas paginadas:', error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    // FILTRO BLINDADO: Verifica por ID (string/num) OU por Nome
-    let result = user.role === UserRole.ADMIN
-      ? safeCalls
-      : safeCalls.filter(c => {
-        const matchId = String(c.agenteId) === String(user.id);
-        const matchName = c.agenteNome === user.name;
-        return matchId || matchName;
-      });
-    // Filtro de Texto Seguro (Case Insensitive)
-    if (searchTerm) {
-      const lower = searchTerm.toLowerCase().trim();
-      result = result.filter(c => {
-        try {
-          return (c.cliente?.toLowerCase() || '').includes(lower) ||
-            (c.contacto?.toLowerCase() || '').includes(lower) ||
-            (c.nuit?.toLowerCase() || '').includes(lower) ||
-            (c.observacoes?.toLowerCase() || '').includes(lower) ||
-            (c.outroTipoPedido?.toLowerCase() || '').includes(lower) ||
-            (c.agenteNome?.toLowerCase() || '').includes(lower);
-        } catch (e) {
-          console.error("Erro no filtro:", e);
-          return false;
-        }
-      });
-    }
-
-    if (filterStage) result = result.filter(c => c.estagio === filterStage);
-    if (filterType) result = result.filter(c => c.tipoPedido === filterType);
-    if (filterAgent) result = result.filter(c => c.agenteId.toString() === filterAgent);
-    if (startDate) {
-      const start = new Date(startDate);
-      start.setHours(0, 0, 0, 0);
-      result = result.filter(c => c.data && new Date(c.data) >= start);
-    }
-    if (endDate) {
-      const end = new Date(endDate);
-      end.setHours(23, 59, 59, 999);
-      result = result.filter(c => c.data && new Date(c.data) <= end);
-    }
-
-    return result;
-  }, [safeCalls, user, searchTerm, filterStage, filterType, filterAgent, startDate, endDate]);
+  useEffect(() => {
+    fetchPaginatedCalls();
+  }, [page, limit, searchTerm, filterStage, filterType, filterAgent, startDate, endDate]);
 
   // Calcular posição do dropdown quando abrir
   useEffect(() => {
@@ -111,7 +90,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
   }, [showExportMenu]);
 
   const handleExportClick = (format: ExportFormat) => {
-    if (filteredCalls.length === 0) {
+    if (paginatedCalls.length === 0) {
       alert("Não existem dados para exportar.");
       return;
     }
@@ -132,12 +111,12 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
 
         // Construir query string de filtros
         const params = new URLSearchParams({
-          searchTerm,
+          search: searchTerm,
           startDate,
           endDate,
-          filterStage,
-          filterType,
-          filterAgent,
+          stage: filterStage,
+          type: filterType,
+          agentId: user.role === UserRole.ADMIN ? filterAgent : user.id.toString(),
           fields: (systemConfig.exportSettings.selectedFields || []).join(','),
           format: selectedFormat,
           exportMode // Adicionado parâmetro de modo
@@ -199,9 +178,8 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
         }, 100);
 
       } else {
-        // Outros formatos usam a função original
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        handleExport(selectedFormat, filteredCalls, systemConfig);
+        // Para outros formatos
+        handleExport(selectedFormat, paginatedCalls, systemConfig);
       }
     } catch (error) {
       console.error('❌ Erro na exportação:', error);
@@ -216,9 +194,10 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (recordToDelete) {
-      onDeleteCall(recordToDelete);
+      await onDeleteCall(recordToDelete);
+      fetchPaginatedCalls();
     }
     setIsDeleteModalOpen(false);
     setRecordToDelete(null);
@@ -229,12 +208,13 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
     setIsEditModalOpen(true);
   };
 
-  const handleUpdate = (formData: any) => {
+  const handleUpdate = async (formData: any) => {
     if (recordToEdit) {
-      onUpdateCall({
+      await onUpdateCall({
         ...recordToEdit,
         ...formData
       });
+      fetchPaginatedCalls();
     }
     setIsEditModalOpen(false);
     setRecordToEdit(null);
@@ -244,11 +224,18 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
     setSearchTerm('');
     setFilterStage('');
     setFilterType('');
+    setFilterAgent('');
     setStartDate('');
     setEndDate('');
+    setPage(1);
   };
 
-  const hasActiveFilters = searchTerm || filterStage || filterType || startDate || endDate;
+  const hasActiveFilters = searchTerm || filterStage || filterType || filterAgent || startDate || endDate;
+
+  // Cálculo do texto de resumo
+  const start = total === 0 ? 0 : (page - 1) * limit + 1;
+  const end = Math.min(page * limit, total);
+  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="space-y-6 animate-in fade-in duration-500">
@@ -258,7 +245,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
         title={`Exportar em ${selectedFormat}`}
         message={
           <div className="space-y-4">
-            <p>Deseja processar a exportação de <strong>{filteredCalls.length}</strong> registos?</p>
+            <p>Deseja processar a exportação de <strong>{total}</strong> registos?</p>
 
             {['XLS', 'XLSX'].includes(selectedFormat || '') && (
               <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-100 dark:border-slate-700 space-y-3">
@@ -299,7 +286,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
         onCancel={() => setIsExportModalOpen(false)}
         icon={
           <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1.01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2-2z" />
           </svg>
         }
       />
@@ -360,25 +347,25 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
               placeholder="Pesquisar por cliente, contacto, NUIT ou observações..."
               className="w-full pl-12 pr-6 py-4 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 focus:bg-white dark:focus:bg-slate-800 focus:border-indigo-500/30 transition-all outline-none font-bold text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 text-sm"
               value={searchTerm}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={e => { setSearchTerm(e.target.value); setPage(1); }}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
-            <input type="date" className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-bold text-slate-700 dark:text-slate-200 text-[10px] uppercase" value={startDate} onChange={e => setStartDate(e.target.value)} />
-            <input type="date" className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-bold text-slate-700 dark:text-slate-200 text-[10px] uppercase" value={endDate} onChange={e => setEndDate(e.target.value)} />
+            <input type="date" className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-bold text-slate-700 dark:text-slate-200 text-[10px] uppercase" value={startDate} onChange={e => { setStartDate(e.target.value); setPage(1); }} />
+            <input type="date" className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-bold text-slate-700 dark:text-slate-200 text-[10px] uppercase" value={endDate} onChange={e => { setEndDate(e.target.value); setPage(1); }} />
 
-            <select className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-black text-[10px] uppercase text-slate-600 dark:text-slate-300" value={filterStage} onChange={e => setFilterStage(e.target.value)}>
+            <select className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-black text-[10px] uppercase text-slate-600 dark:text-slate-300" value={filterStage} onChange={e => { setFilterStage(e.target.value); setPage(1); }}>
               <option value="">ESTÁGIOS</option>
               {CALL_STAGES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
 
-            <select className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-black text-[10px] uppercase text-slate-600 dark:text-slate-300" value={filterType} onChange={e => setFilterType(e.target.value)}>
+            <select className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-black text-[10px] uppercase text-slate-600 dark:text-slate-300" value={filterType} onChange={e => { setFilterType(e.target.value); setPage(1); }}>
               <option value="">TIPOLOGIAS</option>
               {CALL_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
 
-            <select className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-black text-[10px] uppercase text-slate-600 dark:text-slate-300" value={filterAgent} onChange={e => setFilterAgent(e.target.value)}>
+            <select className="w-full px-4 py-3 rounded-xl border-2 border-slate-50 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 outline-none font-black text-[10px] uppercase text-slate-600 dark:text-slate-300" disabled={user.role !== UserRole.ADMIN} value={user.role !== UserRole.ADMIN ? user.id.toString() : filterAgent} onChange={e => { setFilterAgent(e.target.value); setPage(1); }}>
               <option value="">AGENTES</option>
               {users.filter(u => u.role === UserRole.AGENTE || u.role === UserRole.ADMIN).map(u => (
                 <option key={u.id} value={u.id.toString()}>{u.name}</option>
@@ -411,7 +398,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
 
         <div className="px-6 py-3 bg-slate-50/50 dark:bg-slate-700/30 border-t border-slate-100 dark:border-slate-700 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registos: <span className="text-indigo-600">{filteredCalls.length}</span></span>
+            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Registos: <span className="text-indigo-600">{total}</span></span>
             {hasActiveFilters && (
               <button onClick={clearFilters} className="text-[9px] font-black text-rose-500 uppercase tracking-widest hover:underline">Limpar Filtros</button>
             )}
@@ -420,7 +407,12 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
       </div>
 
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden">
-        {filteredCalls.length > 0 ? (
+        {isLoading ? (
+          <div className="py-24 text-center">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600 mx-auto"></div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-4">Carregando...</p>
+          </div>
+        ) : paginatedCalls.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-slate-50/50 dark:bg-slate-700/30 border-b border-slate-100 dark:border-slate-700">
@@ -435,7 +427,7 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-slate-700">
-                {(showAllRecords ? filteredCalls : filteredCalls.slice(0, RECORDS_LIMIT)).map(call => (
+                {paginatedCalls.map(call => (
                   <tr key={call.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-700/30 transition-all group">
                     <td className="px-6 py-5">
                       <p className="font-bold text-slate-800 dark:text-slate-200 text-xs">{call.data ? formatDate(call.data).split(',')[0] : '--'}</p>
@@ -496,31 +488,59 @@ const CallList: React.FC<CallListProps> = ({ calls = [], user, users = [], syste
               </tbody>
             </table>
 
-            {/* Botão Ver Todos / Ver Menos */}
-            {filteredCalls.length > RECORDS_LIMIT && (
-              <div className="px-6 py-4 bg-slate-50/50 dark:bg-slate-700/30 border-t border-slate-100 dark:border-slate-700 flex items-center justify-center">
+            {/* Pagination Footer */}
+            <div className="px-6 py-5 bg-slate-50/50 dark:bg-slate-700/30 border-t border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                Mostrando {start}–{end} de {total} registros
+              </span>
+
+              <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setShowAllRecords(!showAllRecords)}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 rounded-xl font-black text-xs uppercase tracking-widest transition-all"
+                  disabled={page === 1 || isLoading}
+                  onClick={() => setPage(page - 1)}
+                  className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-black text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
                 >
-                  {showAllRecords ? (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                      </svg>
-                      <span>Mostrar Menos</span>
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                      <span>Ver Todos ({filteredCalls.length} registos)</span>
-                    </>
-                  )}
+                  <div className="flex items-center gap-2">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" /></svg>
+                    <span>Anterior</span>
+                  </div>
+                </button>
+
+                <div className="flex items-center gap-1 mx-2">
+                  {[...Array(totalPages)].map((_, i) => {
+                    const pageNum = i + 1;
+                    // Mostrar apenas algumas páginas se houver muitas
+                    if (totalPages > 5 && Math.abs(pageNum - page) > 2 && pageNum !== 1 && pageNum !== totalPages) {
+                      if (Math.abs(pageNum - page) === 3) return <span key={pageNum} className="text-slate-400">...</span>;
+                      return null;
+                    }
+                    return (
+                      <button
+                        key={pageNum}
+                        onClick={() => setPage(pageNum)}
+                        className={`w-8 h-8 rounded-lg text-xs font-black transition-all ${page === pageNum
+                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                            : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600'
+                          }`}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <button
+                  disabled={page === totalPages || total === 0 || isLoading}
+                  onClick={() => setPage(page + 1)}
+                  className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl text-xs font-black text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:text-indigo-600 dark:hover:text-indigo-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <span>Próximo</span>
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
+                  </div>
                 </button>
               </div>
-            )}
+            </div>
           </div>
         ) : (
           <div className="py-24 text-center">

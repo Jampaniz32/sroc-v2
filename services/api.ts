@@ -65,8 +65,8 @@ export const authAPI = {
 
 // Calls API
 export const callsAPI = {
-    getAll: async () => {
-        const response = await api.get('/calls');
+    getAll: async (params?: any) => {
+        const response = await api.get('/calls', { params });
         return response.data;
     },
 

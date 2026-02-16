@@ -28,18 +28,82 @@ const convertCallToFrontend = (call) => ({
 // All routes require authentication
 router.use(authenticateToken);
 
-// Get all calls
+// Get all calls (supports pagination and filtering)
 router.get('/', async (req, res) => {
     try {
-        const [calls] = await db.query(
-            'SELECT * FROM calls ORDER BY created_at DESC'
-        );
-        res.json(calls.map(convertCallToFrontend));
+        const page = parseInt(req.query.page) || 0; // If page is 0, return all (compat with Dashboard)
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = (page - 1) * limit;
+
+        const { search, stage, type, agentId, startDate, endDate } = req.query;
+
+        let query = 'SELECT * FROM calls';
+        let countQuery = 'SELECT COUNT(*) as total FROM calls';
+        const params = [];
+        const conditions = [];
+
+        if (search) {
+            const searchTerm = `%${search}%`;
+            conditions.push('(cliente ILIKE ? OR contacto ILIKE ? OR nuit ILIKE ? OR observacoes ILIKE ?)');
+            params.push(searchTerm, searchTerm, searchTerm, searchTerm);
+        }
+
+        if (stage) {
+            conditions.push('estagio = ?');
+            params.push(stage);
+        }
+
+        if (type) {
+            conditions.push('tipo_pedido = ?');
+            params.push(type);
+        }
+
+        if (agentId) {
+            conditions.push('agente_id = ?');
+            params.push(agentId);
+        }
+
+        if (startDate) {
+            conditions.push('data >= ?');
+            params.push(startDate);
+        }
+
+        if (endDate) {
+            conditions.push('data <= ?');
+            params.push(endDate + ' 23:59:59');
+        }
+
+        const whereClause = conditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}` : '';
+
+        if (page > 0) {
+            const [countRows] = await db.query(countQuery + whereClause, params);
+            const total = countRows[0].total || 0;
+
+            const [calls] = await db.query(
+                `${query}${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+                [...params, limit, offset]
+            );
+
+            res.json({
+                data: calls.map(convertCallToFrontend),
+                total,
+                page,
+                totalPages: Math.ceil(total / limit)
+            });
+        } else {
+            // Original behavior for Dashboard (return all)
+            const [calls] = await db.query(
+                `${query}${whereClause} ORDER BY created_at DESC`,
+                params
+            );
+            res.json(calls.map(convertCallToFrontend));
+        }
     } catch (error) {
         console.error('Get calls error:', error);
         res.status(500).json({ error: 'Erro ao buscar chamadas' });
     }
 });
+
 
 // Get call by ID
 router.get('/:id', async (req, res) => {

@@ -422,7 +422,8 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Descrição</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Classificação</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Agente</th>
-                  <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">WA</th>
+                  <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Agência</th>
+                  <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">WhatsApp</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>
                 </tr>
               </thead>
@@ -454,16 +455,14 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                     </td>
                     <td className="px-6 py-5">
                       <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{call.agenteNome}</p>
-                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-tighter">{call.agencia}</p>
+                    </td>
+                    <td className="px-6 py-5">
+                      <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{call.agencia}</p>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      {call.whatsapp ? (
-                        <div className="w-8 h-8 bg-emerald-500 text-white rounded-lg flex items-center justify-center mx-auto shadow shadow-emerald-500/20">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.771-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.3.045-.691.076-1.127-.064-.265-.085-.595-.19-.99-.356-1.677-.706-2.771-2.415-2.854-2.527-.084-.112-.681-.905-.681-1.725 0-.82.43-.122.583-.284.153-.162.334-.203.446-.203.112 0 .223 0 .32.005.102.005.24.039.375.365.139.335.474 1.157.516 1.241.041.084.069.182.014.295-.056.112-.084.182-.167.28-.084.098-.176.218-.251.295-.084.084-.173.176-.075.344.098.168.435.719.935 1.165.642.573 1.182.751 1.35.836.168.084.266.07.364-.042.098-.112.42-.489.531-.656.112-.168.223-.14.375-.084.152.056.963.454 1.13.538.168.084.279.126.32.196.042.07.042.405-.102.81z" /></svg>
-                        </div>
-                      ) : (
-                        <span className="text-slate-200 text-[10px] font-black">---</span>
-                      )}
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                        {call.whatsapp ? 'SIM' : 'NÃO'}
+                      </span>
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex items-center justify-end space-x-1">
@@ -519,8 +518,8 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                         key={pageNum}
                         onClick={() => setPage(pageNum)}
                         className={`w-8 h-8 rounded-lg text-xs font-black transition-all ${page === pageNum
-                            ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
-                            : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600'
+                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20'
+                          : 'text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-600'
                           }`}
                       >
                         {pageNum}

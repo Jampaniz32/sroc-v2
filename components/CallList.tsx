@@ -75,7 +75,11 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
   };
 
   useEffect(() => {
-    fetchPaginatedCalls();
+    const timer = setTimeout(() => {
+      fetchPaginatedCalls();
+    }, 300); // Debounce de 300ms para pesquisa
+
+    return () => clearTimeout(timer);
   }, [page, limit, searchTerm, filterStage, filterType, filterAgent, startDate, endDate]);
 
   // Calcular posição do dropdown quando abrir
@@ -421,9 +425,9 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Cliente</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Descrição</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Classificação</th>
+                  <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">WhatsApp</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Agente</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest">Agência</th>
-                  <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-center">WhatsApp</th>
                   <th className="px-6 py-4 text-[9px] font-black text-slate-400 uppercase tracking-widest text-right">Ações</th>
                 </tr>
               </thead>
@@ -453,16 +457,16 @@ const CallList: React.FC<CallListProps> = ({ user, users = [], systemConfig, onD
                           }`}>{call.estagio}</span>
                       </div>
                     </td>
+                    <td className="px-6 py-5 text-center">
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
+                        {call.whatsapp ? 'SIM' : 'NÃO'}
+                      </span>
+                    </td>
                     <td className="px-6 py-5">
                       <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{call.agenteNome}</p>
                     </td>
                     <td className="px-6 py-5">
                       <p className="text-xs font-bold text-slate-700 dark:text-slate-200">{call.agencia}</p>
-                    </td>
-                    <td className="px-6 py-5 text-center">
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
-                        {call.whatsapp ? 'SIM' : 'NÃO'}
-                      </span>
                     </td>
                     <td className="px-6 py-5 text-right">
                       <div className="flex items-center justify-end space-x-1">

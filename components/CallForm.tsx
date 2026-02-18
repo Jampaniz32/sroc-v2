@@ -307,10 +307,10 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
           <div className="p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {/* NUIT Field - Com busca inteligente */}
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+              <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 relative">
                 NUIT
                 {clientFound === true && (
-                  <span className="text-emerald-500 text-[9px] normal-case">• Dados preenchidos</span>
+                  <span className="absolute -top-3 left-0 text-emerald-500 text-[8px] normal-case bg-white dark:bg-slate-800 px-1 italic font-bold">Dados preenchidos</span>
                 )}
               </label>
               <div className="relative">
@@ -367,7 +367,7 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
               <div className="relative">
                 <select
                   disabled={isSubmitting}
-                  className={`w-full px-5 py-3 rounded-xl border bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold text-slate-700 dark:text-slate-200 appearance-none disabled:opacity-50 ${clientFound === true ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50/30 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700'}`}
+                  className={`w-full px-5 py-3 rounded-xl border bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-medium text-slate-700 dark:text-slate-200 appearance-none disabled:opacity-50 ${clientFound === true ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50/30 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700'}`}
                   value={formData.entidade}
                   onChange={e => setFormData({ ...formData, entidade: e.target.value })}
                 >
@@ -389,7 +389,7 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
               <div className="relative">
                 <select
                   disabled={isSubmitting}
-                  className={`w-full px-5 py-3 rounded-xl border bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-bold text-slate-700 dark:text-slate-200 appearance-none disabled:opacity-50 ${clientFound === true ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50/30 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700'}`}
+                  className={`w-full px-5 py-3 rounded-xl border bg-slate-50/30 dark:bg-slate-900/30 focus:bg-white dark:focus:bg-slate-800 focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all outline-none font-medium text-slate-700 dark:text-slate-200 appearance-none disabled:opacity-50 ${clientFound === true ? 'border-emerald-200 dark:border-emerald-700 bg-emerald-50/30 dark:bg-emerald-900/20' : 'border-slate-200 dark:border-slate-700'}`}
                   value={formData.agencia}
                   onChange={e => setFormData({ ...formData, agencia: e.target.value })}
                 >
@@ -410,9 +410,9 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
               <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Canal WhatsApp</label>
               <div
                 onClick={() => !isSubmitting && setFormData({ ...formData, whatsapp: !formData.whatsapp })}
-                className={`flex items-center justify-between px-5 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors group ${isSubmitting ? 'cursor-not-allowed opacity-50' : ''}`}
+                className={`flex items-center justify-between px-5 py-3 bg-slate-50/30 dark:bg-slate-900/30 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors group h-[50px] ${isSubmitting ? 'cursor-not-allowed opacity-50' : ''}`}
               >
-                <span className={`text-[11px] font-bold ${formData.whatsapp ? 'text-emerald-600' : 'text-slate-400'}`}>Recebido via WhatsApp</span>
+                <span className={`text-[11px] font-medium ${formData.whatsapp ? 'text-emerald-600' : 'text-slate-400'}`}>Recebido via WhatsApp</span>
                 <div className="flex items-center gap-3">
                   <span className={`text-[10px] font-black uppercase tracking-widest ${formData.whatsapp ? 'text-emerald-500' : 'text-slate-400'}`}>
                     {formData.whatsapp ? 'SIM' : 'NÃO'}

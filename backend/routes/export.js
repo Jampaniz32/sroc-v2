@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
             turno: { header: 'TURNO', width: 20, extract: (r) => r.turno || '' },
             contacto: { header: 'CONTACTO', width: 15, extract: (r) => r.contacto || '' },
             agenteNome: { header: 'AGENTE', width: 18, extract: (r) => r.agente_nome || '' },
-            whatsapp: { header: 'WA', width: 6, extract: (r) => r.whatsapp ? 'SIM' : 'NÃO' },
+            whatsapp: { header: 'WA', width: 6, extract: (r) => String(r.whatsapp) === '1' ? 'SIM' : 'NÃO' },
             observacoes: { header: 'OBSERVAÇÕES', width: 40, extract: (r) => r.observacoes || '', alignLeft: true }
         };
 

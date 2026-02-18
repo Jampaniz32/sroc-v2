@@ -12,7 +12,7 @@ router.use(authenticateToken);
 router.get('/search/:nuit', async (req, res) => {
     try {
         const { nuit } = req.params;
-        
+
         if (!nuit || nuit.length < 3) {
             return res.status(400).json({ error: 'NUIT deve ter pelo menos 3 caracteres' });
         }
@@ -36,7 +36,7 @@ router.get('/search/:nuit', async (req, res) => {
                 entidade: client.entidade,
                 agencia: client.agencia,
                 contacto: client.contacto,
-                whatsapp: Boolean(client.whatsapp)
+                whatsapp: String(client.whatsapp) === '1'
             }
         });
     } catch (error) {
@@ -58,7 +58,7 @@ router.get('/', async (req, res) => {
             entidade: c.entidade,
             agencia: c.agencia,
             contacto: c.contacto,
-            whatsapp: Boolean(c.whatsapp),
+            whatsapp: String(c.whatsapp) === '1',
             createdAt: c.created_at,
             updatedAt: c.updated_at
         })));
@@ -88,10 +88,10 @@ router.post('/', async (req, res) => {
                 WHERE nuit = ?`,
                 [nome, entidade, agencia, contacto, whatsapp, nuit]
             );
-            
+
             const [updated] = await db.query('SELECT * FROM clients WHERE nuit = ?', [nuit]);
-            res.json({ 
-                action: 'updated', 
+            res.json({
+                action: 'updated',
                 client: {
                     id: updated[0].id,
                     nuit: updated[0].nuit,
@@ -99,7 +99,7 @@ router.post('/', async (req, res) => {
                     entidade: updated[0].entidade,
                     agencia: updated[0].agencia,
                     contacto: updated[0].contacto,
-                    whatsapp: Boolean(updated[0].whatsapp)
+                    whatsapp: String(updated[0].whatsapp) === '1'
                 }
             });
         } else {
@@ -110,10 +110,10 @@ router.post('/', async (req, res) => {
                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
                 [id, nuit, nome, entidade, agencia, contacto, whatsapp]
             );
-            
-            res.status(201).json({ 
-                action: 'created', 
-                client: { id, nuit, nome, entidade, agencia, contacto, whatsapp: Boolean(whatsapp) }
+
+            res.status(201).json({
+                action: 'created',
+                client: { id, nuit, nome, entidade, agencia, contacto, whatsapp: String(whatsapp) === '1' }
             });
         }
     } catch (error) {
@@ -142,7 +142,7 @@ router.get('/:id', async (req, res) => {
             entidade: c.entidade,
             agencia: c.agencia,
             contacto: c.contacto,
-            whatsapp: Boolean(c.whatsapp)
+            whatsapp: String(c.whatsapp) === '1'
         });
     } catch (error) {
         console.error('Get client error:', error);

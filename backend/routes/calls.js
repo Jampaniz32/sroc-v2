@@ -15,7 +15,7 @@ const convertCallToFrontend = (call) => ({
     tipoPedido: call.tipo_pedido || call.tipoPedido,
     estagio: call.estagio,
     contacto: call.contacto,
-    whatsapp: Boolean(call.whatsapp),
+    whatsapp: String(call.whatsapp) === '1',
     observacoes: call.observacoes,
     data: call.data,
     turno: call.turno,

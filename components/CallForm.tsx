@@ -346,7 +346,7 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
                 value={formData.cliente}
                 onChange={e => setFormData({ ...formData, cliente: e.target.value })}
                 onBlur={e => setFormData({ ...formData, cliente: formatName(e.target.value) })}
-                placeholder="Ex: Albino Mondlane"
+                placeholder="Ex: Deonildo Simango"
               />
             </div>
 

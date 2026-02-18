@@ -75,8 +75,7 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
           cliente: formatName(client.nome) || prev.cliente,
           entidade: client.entidade || prev.entidade,
           agencia: client.agencia || prev.agencia,
-          contacto: formatPhone(client.contacto) || prev.contacto,
-          whatsapp: client.whatsapp || prev.whatsapp
+          contacto: formatPhone(client.contacto) || prev.contacto
         }));
         setClientFound(true);
       } else {
@@ -414,8 +413,13 @@ const CallForm: React.FC<CallFormProps> = ({ onAdd, user, initialData }) => {
                 className={`flex items-center justify-between px-5 py-3 bg-slate-50/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors group ${isSubmitting ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 <span className={`text-[11px] font-bold ${formData.whatsapp ? 'text-emerald-600' : 'text-slate-400'}`}>Recebido via WhatsApp</span>
-                <div className={`w-10 h-5 rounded-full relative transition-all duration-300 ${formData.whatsapp ? 'bg-emerald-500' : 'bg-slate-300'}`}>
-                  <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all duration-300 ${formData.whatsapp ? 'left-5.5' : 'left-0.5'}`}></div>
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${formData.whatsapp ? 'text-emerald-500' : 'text-slate-400'}`}>
+                    {formData.whatsapp ? 'SIM' : 'NÃO'}
+                  </span>
+                  <div className={`w-10 h-5 rounded-full relative transition-all duration-300 ${formData.whatsapp ? 'bg-emerald-500' : 'bg-slate-300'}`}>
+                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all duration-300 ${formData.whatsapp ? 'left-5.5' : 'left-0.5'}`}></div>
+                  </div>
                 </div>
               </div>
             </div>
